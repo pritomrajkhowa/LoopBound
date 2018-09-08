@@ -11,7 +11,7 @@ program
 complexity analysis and worst case execution time (WCET) analysis.
 The aim of program complexity analysis is to derive an asymptotic complexity
 of a given program. The complexity is commonly considered by programmers
-in their everyday work and it is also used in specifications of programming languages.(This para is copied from a paper)
+in their everyday work and it is also used in specifications of programming languages.(need to rewrite)
 
 
 ### Awards & Achievements
