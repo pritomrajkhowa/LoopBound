@@ -67,7 +67,6 @@ Next, we illustrate how to use LoopBoundTool
 
 #### How to run this Example 
 
-$LoopBoundTool/viap_tool_bound.py  benchmarks/multidimensional/transpose.c
 
 
 ```C
@@ -84,12 +83,11 @@ void ex01(int a, int b) {
 }
 
 ```
-Note that this example can also be found in the benchmarks/multidimensional
-directory. VIAP defines a number of functions (one for each basic type)
-for introducing nondeterministic (i.e., unconstrained) values, such as
-`__VERIFIER_nondet_int` used in this example.
 
 #### How to run above Example 
+
+
+#### Example 1
 
 $../viap_tool_bound.py ../benchmark/ABC_ex01.c
 
@@ -135,4 +133,164 @@ Bound - O(_n) of the loop corresponds to loop constant_N1(a,b)
 ((-(1)+b)-a)
 
 Final Complexity ---- O(_n)
+```
+
+
+
+#### Example 2
+
+
+```C
+// benchmarks/ABC_ex01.c
+extern void __VERIFIER_error() __attribute__ ((__noreturn__));
+void __VERIFIER_assert(int cond) { if(!(cond)) { ERROR: __VERIFIER_error(); } }
+int __VERIFIER_nondet_int();
+int main() {
+int v1 = __VERIFIER_nondet_int();
+int v2 = __VERIFIER_nondet_int();
+goto loc2;
+loc2:
+ if (__VERIFIER_nondet_int()) {
+  goto loc0;
+ }
+ goto end;
+loc0:
+ if (__VERIFIER_nondet_int()) {
+  v1 = __VERIFIER_nondet_int();
+  v2 = __VERIFIER_nondet_int();
+  goto loc1;
+ }
+ goto end;
+loc1:
+end:
+;
+}
+
+```
+
+#### How to run above Example 
+
+
+
+$../viap_tool_bound.py ../benchmark/dsa_test1.t2.c
+
+#### Output 
+
+```python
+Program Body
+{
+  int v1_var;
+  v1_var = __VERIFIER_nondet_int();
+  int v2_var;
+  v2_var = __VERIFIER_nondet_int();
+  if (__VERIFIER_nondet_int() > 0)
+  {
+    if (__VERIFIER_nondet_int() > 0)
+    {
+      v1_var = __VERIFIER_nondet_int();
+      v2_var = __VERIFIER_nondet_int();
+    }
+
+  }
+
+}
+
+Function Name:
+main
+Return Type:
+int
+Input Variables:
+{}
+Local Variables:
+{ v1_var:int v2_var:int}
+
+Output in normal notation:
+1. Frame axioms:
+
+2. Output equations:
+v1_var1 = ite((__VERIFIER_nondet_int7>0),ite((__VERIFIER_nondet_int6>0),__VERIFIER_nondet_int4,__VERIFIER_nondet_int2),__VERIFIER_nondet_int2)
+v2_var1 = ite((__VERIFIER_nondet_int7>0),ite((__VERIFIER_nondet_int6>0),__VERIFIER_nondet_int5,__VERIFIER_nondet_int3),__VERIFIER_nondet_int3)
+
+3. Other axioms:
+
+4. Assumption :
+
+5. Assertion :
+
+
+Final Complexity ---- O(1)
+```
+
+
+
+#### Example 3
+
+
+```C
+// benchmarks/ABC_ex01.c
+extern void __VERIFIER_error() __attribute__ ((__noreturn__));
+void __VERIFIER_assert(int cond) { if(!(cond)) { ERROR: __VERIFIER_error(); } }
+int __VERIFIER_nondet_int();
+
+void ex02(int a,int b) {
+    int i = 1;
+      while (i-b<a) {
+	i=i/2;
+      }
+
+}
+```
+
+#### How to run above Example 
+
+
+
+$../viap_tool_bound.py ../benchmark/simple1.c
+
+#### Output 
+
+```python
+Program Body
+{
+  int i;
+  i = 1;
+  while ((i - b) < a)
+  {
+    i = i / 2;
+  }
+
+}
+
+Function Name:
+ex02
+Return Type:
+void
+Input Variables:
+{ a:int b:int}
+Local Variables:
+{ i:int}
+
+Output in normal notation:
+1. Frame axioms:
+a1(a) = a
+b1(b) = b
+
+2. Output equations:
+i1(b,a) = ((2**-(_N1(b,a)))*1)
+
+3. Other axioms:
+((((2**-(_N1(b,a)))*1)-b)>=a)
+(_n1<_N1(b,a)) -> ((((2**-(_n1))*1)-b)<a)
+
+4. Assumption :
+
+5. Assertion :
+
+
+Bound - O(log(_n)/log(2))
+
+log(1/(a + b))/log(2)
+
+Final Complexity ---- O(log(_n)/log(2))
+
 ```

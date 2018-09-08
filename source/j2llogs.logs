@@ -18,3 +18,50 @@ Original Axoims
 b1(_n1 + 1)=b1(_n1) + 1,b1(0)=b
  Closed Form Solution
 _n1 + b
+
+***********************
+2018-09-08 09:58:14
+***********************
+
+Command--Translate 
+
+Parameters--
+ File Name--loop_bound_tool/benchmark/dsa_test1.t2.c
+
+***********************
+2018-09-08 10:00:41
+***********************
+
+Command--Translate 
+
+Parameters--
+ File Name--loop_bound_tool/benchmark/dsa_test1.t2.c
+
+***********************
+2018-09-08 10:07:04
+***********************
+
+Command--Translate 
+
+Parameters--
+ File Name--loop_bound_tool/benchmark/dsa_test1.t2.c
+
+***********************
+2018-09-08 10:10:54
+***********************
+
+Command--Translate 
+
+Parameters--
+ File Name--loop_bound_tool/benchmark/simple1.c
+
+Equation Pass to sympy
+T(n+1)-(T(n)/2)=0------Base Case--T(0)=i
+
+Closed form solution return by sympy 
+2**(-n)*i
+
+Original Axoims 
+i1(_n1 + 1)=i1(_n1)/2,i1(0)=i
+ Closed Form Solution
+2**(-_n1)*i
