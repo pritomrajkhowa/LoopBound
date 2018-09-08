@@ -1,5 +1,17 @@
 # LoopBoundTool
 
+We present a new algorithm for computing upper bounds on the number of executions of each program instruction during any single program run. The upper bounds are expressed as functions of program input values. Experimental results show that the algorithm implemented
+in a prototype tool LoopBoundTool often produces tighter bounds than current tools like Looperman, Loopus, KoAT, PUBS and Rank for loop bound analysis.
+
+The goal of loop bound analysis is to derive for each loop in a given program
+an upper bound on the number of its iterations during any execution of the
+program. These bounds can be parametrized by the program input. The loop
+bound analysis is an active research area with two prominent applications: 
+program
+complexity analysis and worst case execution time (WCET) analysis.
+The aim of program complexity analysis is to derive an asymptotic complexity
+of a given program. The complexity is commonly considered by programmers
+in their everyday work and it is also used in specifications of programming languages.(This para is copied from a paper)
 
 
 ### Awards & Achievements
@@ -49,7 +61,7 @@ PATH_TO_LoopBoundTool/viap_tool_bound.py sourcefile
 -DISPLAY DETAIL BOUND ANALYSIS OF INPUT PROGRAM
 ```
 
-### Using The recSolver
+### Using The LoopBoundTool
 
 Next, we illustrate how to use LoopBoundTool 
 
