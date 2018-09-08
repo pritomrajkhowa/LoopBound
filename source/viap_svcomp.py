@@ -38736,7 +38736,7 @@ def prove_auto_loop_bound_strategy1(program, property, program_analysis, program
                         for x in final_values:
                             degree_max=None
                             degree_x=None
-                            if 'log' not in str(max) :
+                            if 'log' not in str(max_value) :
                                 degree_max= degree(max_value, simplify("_n"))
                             else:
                                 degree_max=0 
