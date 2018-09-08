@@ -1,0 +1,20 @@
+
+***********************
+2018-09-08 09:52:53
+***********************
+
+Command--Translate 
+
+Parameters--
+ File Name--loop_bound_tool/benchmark/ABC_ex01.c
+
+Equation Pass to sympy
+T(n+1)-(T(n) + 1)=0------Base Case--T(0)=b
+
+Closed form solution return by sympy 
+b + n
+
+Original Axoims 
+b1(_n1 + 1)=b1(_n1) + 1,b1(0)=b
+ Closed Form Solution
+_n1 + b

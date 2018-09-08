@@ -66,3 +66,73 @@ PATH_TO_LoopBoundTool/viap_tool_bound.py sourcefile
 Next, we illustrate how to use LoopBoundTool 
 
 #### How to run this Example 
+
+$LoopBoundTool/viap_tool_bound.py  benchmarks/multidimensional/transpose.c
+
+
+```C
+// benchmarks/ABC_ex01.c
+extern void __VERIFIER_error() __attribute__ ((__noreturn__));
+void __VERIFIER_assert(int cond) { if(!(cond)) { ERROR: __VERIFIER_error(); } }
+int __VERIFIER_nondet_int();
+
+void ex01(int a, int b) {
+      while (a >= b) {
+          b = b + 1;
+      }
+          return;
+}
+
+```
+Note that this example can also be found in the benchmarks/multidimensional
+directory. VIAP defines a number of functions (one for each basic type)
+for introducing nondeterministic (i.e., unconstrained) values, such as
+`__VERIFIER_nondet_int` used in this example.
+
+#### How to run above Example 
+
+$../viap_tool_bound.py ../benchmark/ABC_ex01.c
+
+#### Output 
+
+```python
+Program Body
+{
+  while (a >= b)
+  {
+    b = b + 1;
+  }
+
+}
+
+Function Name:
+ex01
+Return Type:
+void
+Input Variables:
+{ a:int b:int}
+Local Variables:
+{}
+
+Output in normal notation:
+1. Frame axioms:
+a1(a) = a
+
+2. Output equations:
+b1(b,a) = (_N1(a,b)+b)
+
+3. Other axioms:
+(a<(_N1(a,b)+b))
+(_n1<_N1(a,b)) -> (a>=(_n1+b))
+
+4. Assumption :
+
+5. Assertion :
+
+
+Bound - O(_n) of the loop corresponds to loop constant_N1(a,b)
+
+((-(1)+b)-a)
+
+Final Complexity ---- O(_n)
+```
