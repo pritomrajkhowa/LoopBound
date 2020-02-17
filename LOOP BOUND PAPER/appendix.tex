@@ -1,0 +1,491 @@
+\section{Appendix}
+\label{sec:appendix}
+
+\subsection{SPEED 1}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1.  int n; x=0; y=0;
+2.  while(1){
+3.      if (x < n) { 
+4.          y=y+1;
+5.          x=x+1; 
+6.      } else if (y > 0)
+7.         y=y-1;
+8.      else 
+9.         break;
+10.    }
+11.  }
+\end{verbatim}
+
+
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1. n_1 = n, y_1 = y_7(N_1), x_1 = x_7(N_1)\\
+	&&2.break\_1\_flag1 = break\_1\_flag7(_N1)\\
+	&&3.\forall n_1,y_7(n_1+1) = ite(x_7(n_1)<n),\\ &&\hspace*{2em}ite((y_7(n_1)>0),(y_7(n_1)-1),y_7(n_1)))\\ 
+	&&4.\forall n_1,x_7((n_1+1)) = ite((x_7(n_1)<n),\\ &&\hspace*{2em}(x_7(n_1)+1),x_7(n_1))\\ 
+	&&5.\forall n_1,break\_1\_flag_7((n_1+1)) = ite((x_7(n_1)<n),\\ &&\hspace*{2em}0,ite((y_7(n_1)>0),0,1))\\
+	&&6.y_7(0) = 0, x_7(0) = 0, break\_1\_flag_7(0) = 0\\
+	&&7.((1<=0) \lor (break\_1\_flag7(N_1)\not=0))\\
+	&&8.\forall n_1.(n_1<N_1) \rightarrow ((1>0)\\
+	&&\hspace*{4em} \land (break\_1\_flag_7(n_1)==0))
+\end{eqnarray*}
+
+
+
+By analyzing the equations (7) and (8), we have found that loop terminates only when break excuted. We need to check all possible exution path of this loop end up excuting break. For that we will use case analysis to we find the closed form solution of the conditional recurrences of $x_7$ and $y_7$
+
+\subsubsection{Case 1} When $x_7(0)<n$ holdes, RS will find the following closed form solution for the conditional recurrences of $x_7$ and $y_7$ 
+\begin{eqnarray*}
+	&&\hspace*{-2em}x_7(n_1)=ite(0<n_1\leq C_1,n_1,ite(n_1\leq C_2,C_1,C_1))\\
+	&&\hspace*{-2em}y_7(n_1)=ite(0<n_1\leq C_1,0-n_1,ite(n_1 \leq C_2,\\
+	&&\hspace*{5em}n-C_1,C_2-C_1))
+\end{eqnarray*}	
+We can derived $C_1=n$ and $C_2=2*n$ by solving following additional axoims
+\begin{eqnarray*}
+	&&\hspace*{-2em}\forall n_1. 0 \leq n_1<C_1 \rightarrow n_1<n \\
+	&&\hspace*{-2em}\neg (C_1 < n)\\
+	&&\hspace*{-2em}\forall n_1. C_1 \leq n_1<C_2 \rightarrow \neg (C_1 < n) \land n_1-C_1 > 0\\
+	&&\hspace*{-2em}\neg (C_1 < n) \land \neg (C_2-C_1 > 0)
+\end{eqnarray*}
+
+From the above equations, We can derives $N_1=2*n$ which is the bound $\mathcal{B}^{\vec{X}}_{(case_1)}=2*n$
+
+
+\subsubsection{Case 2} When holdes $\neg (x_7(0)<n) \wedge \neg (y_7(0)>0)$ , RS will find the following closed form solution for the conditional recurrences of $x_7$ and $y_7$ along with additional axoims
+\begin{eqnarray*}
+	&&\hspace*{-2em}x_7(n_1)=0, y_7(n_1)=0
+\end{eqnarray*}
+
+From the above equations, We can derives $N_1=1$ which is the bound $\mathcal{B}^{\vec{X}}_{(case_2)}=1$
+
+Another case $\neg (x_7(0)<n) \wedge (y_7(0)>0)$ is invalid. Now $\mathcal{B}^{\vec{X}}=max(\mathcal{B}^{\vec{X}}_{(case_1)},\mathcal{B}^{\vec{X}}_{(case_2)})=max(1,2*n)=2*n$
+
+\subsection{SPEED 2}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1. int n, m, va=n, vb=0;
+2. while (va > 0) {
+3.     if (vb < m) { 
+4.         vb=vb+1; va=va-1;
+5.     } else {
+6.          vb=vb-1; vb=0;
+7. }
+8.}
+\end{verbatim}
+
+
+
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, va_1 = va_5(N_1), vb_1 = vb_5(N_1)\\
+	&&3.\forall n_1,va_5((n_1+1)) = ite((vb_5(n_1)<m),\\ &&\hspace*{5em}(va_5(n_1)-1),va_5(n_1))\\ 
+	&&3.\forall n_1,vb_5((n_1+1)) = ite((vb_5(n_1)<m),\\ &&\hspace*{5em}(vb_5(n_1)+1),0)\\
+	&&6.va_5(0) = n, vb_5(0) = 0\\
+	&&7.\neg (va_5(N_1)>0)\\
+	&&8.\forall n_1.(n_1<N_1) \rightarrow (va_5(n_1)>0)
+\end{eqnarray*}
+
+Then RS find the closed form solution of the conditional recurrences of $va_5$ and $vb_5$
+\begin{eqnarray*}
+	&&\hspace*{-5em}va_5(n_1)=ite(0<n_1\leq C_1,n-n_1,0)\\
+	&&\hspace*{-5em}vb_5(n_1)=ite(0<n_1\leq C_1,n_1,C_1)
+\end{eqnarray*}
+
+We can derived $C_1=m$ by solving following additional axoims
+\begin{eqnarray*}
+	&&\hspace*{-5em}\forall n_1. 0 \leq n_1<C_1 \rightarrow n_1<m \\
+	&&\hspace*{-5em}\neg (C_1 < m)
+\end{eqnarray*}
+
+After subsituting $va_5(n_1)$ and $vb_5(n_1)$ and getting rid of $va_5(n_1+1)$ and $vb_5(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m\\
+	&&2. va_1 = ite(0<N_1\leq m,n-N_1,0) \\
+	&&3. vb_1 = ite(0<N_1\leq m,N_1,m)\\
+	&&4.\neg (ite(0<N_1\leq m,n-N_1,0)>0)\\
+	&&5.\forall n_1.(n_1<N_1) \rightarrow (ite(0<n_1\leq m,n-n_1,0)>0)
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}=n$ from equation (4) and (5).
+
+\subsection{SPEED 3}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1. int n, m, i = n;
+2. while (i > 0) {
+3.     if (i < m) { 
+4.         i = i - 1;
+5.     } else {
+6.         i = i - m;
+7. }
+8.}
+\end{verbatim}
+
+
+
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, i_1 = i_3(N_1)\\
+	&&2.\forall n_1,i_3((n_1+1)) = ite((i_3(n_1)<m),\\ &&\hspace*{5em}(i_3(n_1)-1),(i_3(n_1)-m))\\ 
+	&&3.i_3(0) = n\\
+	&&4.\neg (i_3(N_1)>0)\\
+	&&5.\forall n_1.(n_1<N_1) \rightarrow (i_3(n_1)>0)
+\end{eqnarray*}
+
+Then RS find the closed form solution of the conditional recurrence of $i_3$ using case analysis as follows
+
+\subsubsection{Case 1} When $i_3(0)<m$ holdes, RS will find the following closed form solution
+\begin{eqnarray*}
+	&&\hspace*{-5em}i_3(n_1)=n-n_1
+\end{eqnarray*}
+
+After subsituting $i_3(n_1)$ and getting rid of $i_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, i_1 = n-N_1\\
+	&&2.\neg (n-N_1>0)\\
+	&&3.\forall n_1.(n_1<N_1) \rightarrow (n-n_1>0)
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{case1}=n$ from equation (2) and (3).
+\subsubsection{Case 2} When $neg (i_3(0)<m)$ holdes, RS will find the following closed form solution
+\begin{eqnarray*}
+	&&\hspace*{-5em}i_3(n_1)=n-m*n_1
+\end{eqnarray*}
+
+After subsituting $i_3(n_1)$ and getting rid of $i_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, i_1 = n-m*N_1\\
+	&&2.\neg (n-m*N_1>0)\\
+	&&3.\forall n_1.(n_1<N_1) \rightarrow (n-m*n_1>0)
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{case2}=n/m$ from equation (2) and (3).
+
+We can derived that $\mathcal{B}^{\vec{X}}=max(n,n/m)=n$ .
+
+\subsection{SPEED 4}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1.  int n, m, dir, i;
+2.  assume(0<m);
+3.  assume(m<n);
+4.  i = m;
+5.  while (0 < i && i < n) {
+6.       if (dir == 1) i++;
+7.       else i--;
+8.  }
+\end{verbatim}
+
+
+
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1. m1 = m, dir1 = dir, n1 = n, i_1 = i_2(N_1)\\
+	&&2.\forall n_1.i_2((n_1+1)) = ite((dir==1),\\ &&\hspace*{5em}(i_2(n_1)+1),i_2(n_1)-1)\\ 
+	&&3.i_2(0) = m\\
+	&&4.\neg (0<i_2(N_1)) \land (i_2(N_1)<n)\\
+	&&5.\forall n_1.(n_1<N_1) \rightarrow ((0<i_2(n_1)) \land (i_2(n_1)<n))
+\end{eqnarray*}
+
+
+
+Then RS find the closed form solution of the conditional recurrence of $i_3$ using case analysis under the assumptions $0<m$ and $m<n$ as follows
+
+\subsubsection{Case 1} When $dir==1$ holdes, RS will find the following closed form solution
+\begin{eqnarray*}
+	&&\hspace*{-5em}i_2(n_1)=m+n_1
+\end{eqnarray*}
+
+After subsituting $i_3(n_1)$ and getting rid of $i_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, i_1 = m+N_1\\
+	&&2.\neg (0<m+N_1) \land (m+N_1<n)\\
+    &&3.\forall n_1.(n_1<N_1) \rightarrow ((0<m+n_1) \land (m+n_1<n))
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{case1}=n-m$ from equation (2) and (3).
+\subsubsection{Case 2} When $neg (dir==1)$ holdes, RS will find the following closed form solution
+\begin{eqnarray*}
+	&&\hspace*{-5em}i_3(n_1)=m-n_1
+\end{eqnarray*}
+
+After subsituting $i_3(n_1)$ and getting rid of $i_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1. n_1 = n, m_1 = m, i_1 = m-N_1\\
+	&&2.\neg (0<m-N_1) \land (m-N_1<n)\\
+	&&3.\forall n_1.(n_1<N_1) \rightarrow ((0<m-n_1) \land (m-n_1<n))
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{case2}=m$ from equation (2) and (3).
+
+We can derived that $\mathcal{B}^{\vec{X}}=max(m,n-m)$ .
+
+\subsection{SPEED 5}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1.  int n, i=0, j;
+2.  while (i < n)
+3.  {
+4.     j = i + 1;
+5.     while (j < n)
+6.     {
+7.         if (nondet_int() > 0){
+8.              j = j - 1; n = n - 1;
+9.          }
+10.          j = j + 1;
+11.     }
+12.     i = i + 1;
+13.  }
+\end{verbatim}
+
+
+
+
+
+
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1.i_1 = (N_2+0), j_1 = j_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_1,n_2.j_4((n_1+1),n_2) = (ite((nondet\_int_2(n_1,n_2)>0),\\ &&\hspace*{5em}(j_4(n_1,n_2)-1),j_4(n_1,n_2))+1)\\ 
+	&&3.\forall n_1,n_2.n_4((n_1+1),n_2) = ite((nondet\_int_2(n_1,n_2)>0),\\ &&\hspace*{5em}(n_4(n_1,n_2)-1),n_4(n_1,n_2))\\ 
+	&&4.\forall n_2.j_4(0,n_2) = ((n_2+0)+1)\\
+	&&5.\forall n_2.n_4(0,n_2) = n_7(n_2)\\
+	&&6.\forall n_2.\neg (j_4(N_1(n_2),n_2)<n_4(N_1(n_2),n_2))\\
+	&&7.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (j_4(n_1,n_2)<n_4(n_1,n_2))\\
+	&&8.\forall n_2.j_7((n_2+1)) = j_4(N_1(n_2),n_2)\\
+	&&9.\forall n_2.n_7((n_2+1)) = n_4(N_1(n_2),n_2)\\
+	&&10.j_7(0) = j, n_7(0) = n\\
+	&&11.\neg ((N_2+0)<n_7(N_2))\\
+	&&12.\forall n_2.(n_2<N_2) \rightarrow ((n_2+0)<n_7(n_2))
+\end{eqnarray*}
+
+Then RS find the closed form solution of the conditional recurrence of $j_4$ and $n_4$, which is associated  with inner loop, using case analysis as follows
+\subsubsection{Case 1} When $\forall n_1,n_2.(nondet\_int_2(n_1,n_2)>0)$ holdes, RS will find the following closed form solution
+
+\begin{eqnarray*}
+	&&\forall n_2.j_4(n_1,n_2) = ((n_2+0)+1)\\  
+	&&\forall n_2.n_4(n_1,n_2) = n_7(n_2)-n_1 
+\end{eqnarray*}
+
+After subsituting $j_4(n_1,n_2)$,$n_4(n_1,n_2)$ and getting rid of $j_4(n_1+1,n_2)$,$n_4(n_1+1,n_2)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.i_1 = (N_2+0), j_1 = j_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_2.\neg (N_1(n_2)<n_7(n_2)-N_1(n_2))\\
+	&&3.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<n_7(n_2)-n_1)\\
+	&&4.\forall n_2.j_7((n_2+1)) = ((n_2+0)+1)\\
+	&&5.\forall n_2.n_7((n_2+1)) = n_7(n_2)-N_1(n_2)\\
+	&&6.j_7(0) = j, n_7(0) = n\\
+	&&7.\neg ((N_2+0)<n_7(N_2))\\
+	&&8.\forall n_2.(n_2<N_2) \rightarrow ((n_2+0)<n_7(n_2))
+\end{eqnarray*}
+
+
+
+Then RS find the closed form solution of the conditional recurrence of $j_4$ and $n_4$, which is associated  with inner loop, using case analysis as follows
+
+\[n_7(n_2) = n-\sum_{i=1}^{n_2}N_1(i)\]
+
+After subsituting $n_7(n_2)$ and getting rid of $n_7(n_2+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.i_1 = (N_2+0), j_1 = ite(N_2==0,j,(N_2)\\
+	&&2.n_1 = n-\sum_{i=1}^{N_2}N_1(i)\\
+	&&3.\forall n_2.\neg (N_1(n_2)<n-\sum_{i=1}^{n_2}N_1(i)-N_1(n_2))\\
+    &&4.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<n-\sum_{i=1}^{n_2}N_1(i)-n_1)\\
+	&&5.\neg ((N_2+0)<n-\sum_{i=1}^{N_2}N_1(i))\\
+	&&6.\forall n_2.(n_2<N_2) \rightarrow ((n_2+0)<n-\sum_{i=1}^{n_2}N_1(i))
+\end{eqnarray*}
+
+\subsubsection{Case 2} When $\forall n_1,n_2.\neg (nondet\_int_2(n_1,n_2)>0)$ holdes, RS will find the following closed form solution
+
+\begin{eqnarray*}
+	&&\forall n_2.j_4(n_1,n_2) = ((n_2+0)+1)+n_1\\  
+	&&\forall n_2.n_4(n_1,n_2) = n_7(n_2)+n_1 
+\end{eqnarray*}
+
+After subsituting $j_4(n_1,n_2)$,$n_4(n_1,n_2)$ and getting rid of $j_4(n_1+1,n_2)$,$n_4(n_1+1,n_2)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.i_1 = (N_2+0), j_1 = j_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_2.\neg (N_1(n_2)<n_7(n_2)+N_1(n_2))\\
+	&&3.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<n_7(n_2)+n_1)\\
+	&&4.\forall n_2.j_7((n_2+1)) = ((n_2+0)+1)-N_1(n_2)\\
+	&&5.\forall n_2.n_7((n_2+1)) = n_7(n_2)+N_1(n_2)\\
+	&&6.j_7(0) = j, n_7(0) = n\\
+	&&7.\neg ((N_2+0)<n_7(N_2))\\
+	&&8.\forall n_2.(n_2<N_2) \rightarrow ((n_2+0)<n_7(n_2))
+\end{eqnarray*}
+
+
+
+Then RS find the closed form solution of the conditional recurrence of $j_4$ and $n_4$, which is associated  with inner loop, using case analysis as follows
+
+\[n_7(n_2) = n+\sum_{i=1}^{n_2}N_1(i)\]
+
+After subsituting $n_7(n_2)$ and getting rid of $n_7(n_2+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.i_1 = (N_2+0), j_1 = ite(N_2==0,j,(N_2)\\
+	&&2.n_1 = n+\sum_{i=1}^{N_2}N_1(i)\\
+	&&3.\forall n_2.\neg (N_1(n_2)<n-\sum_{i=1}^{n_2}N_1(i)+N_1(n_2))\\
+	&&4.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<n-\sum_{i=1}^{n_2}N_1(i)+n_1)\\
+	&&5.\neg ((N_2+0)<n+\sum_{i=1}^{N_2}N_1(i))\\
+	&&6.\forall n_2.(n_2<N_2) \rightarrow ((n_2+0)<n+\sum_{i=1}^{n_2}N_1(i))
+\end{eqnarray*}
+\subsection{SPEED 6}
+
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1.  int n;
+2.  while (n>0)
+3.  {
+4.     n=n-1;
+5.     while (n>0) 
+6.     {
+7.         if (__VERIFIER_nondet_int())
+                  break;
+8.         n=n-1;
+9.     }
+10.  }
+\end{verbatim}
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1.break\_1\_flag_1 = break\_1\_flag_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_1,n_2.n_5((n_1+1),n_2) = \\ &&\hspace*{5em}ite((ite((nondet\_int_2(n_1,n_2)>0),1,0)==0),\\ 
+    &&\hspace*{7em}(n_5(n_1,n_2)-1),n_5(n_1,n_2))\\ 
+	&&3.\forall n_1,n_2.break\_1\_flag_5((n_1+1),n_2) = \\ &&\hspace*{5em}ite((nondet_int_2(n_1,n_2)>0),1,0)\\ 
+	&&4.\forall n_2.break\_1\_flag_5(0,n_2) = break\_1\_flag_7(n_2)\\
+	&&5.\forall n_2.n_5(0,n_2) = (n_7(n_2)-1)\\
+	&&6.\forall n_2.\neg ((n_5(<N_1(n_2),n_2)>0)\\
+	&&\hspace*{5em}\land (break\_1\_flag_5(<N_1(n_2),n_2)==0))\\
+\end{eqnarray*}
+\begin{eqnarray*}
+	&&7.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow ((n_5(n_1,n_2)>0)\\
+	&& \hspace*{5em}\land (break\_1\_flag_5(n_1,n_2)==0))\\
+	&&8.\forall n_2.break\_1\_flag_7((n_2+1)) = break\_1\_flag_5(N_1(n_2),n_2)\\
+	&&9.\forall n_2.n_7((n_2+1)) = n_5(N_1(n_2),n_2)\\
+	&&10.break\_1\_flag_7(0) = 0, n_7(0) = n\\
+	&&11.\neg (n_7(N_2)>0)\\
+	&&12.\forall n_2.(n_2<N_2) \rightarrow (n_7(n_2)>0)
+\end{eqnarray*}
+
+
+By analyzing the equations (6) and (7), we have found that loop terminates only when break excuted. We need to check all possible exution path of this loop end up excuting break. For that we will use case analysis to we find the closed form solution of the conditional recurrences of $n_5$ and $n_7$
+
+\subsubsection{Case 1} When break never excute which means $\forall n_1,n_2. \neg (nondet\_int_2(n_1,n_2)>0)$, then we tried to find the closed form solution of the following recurrence
+
+\[n_5((n_1+1),n_2) = (n_5(n_1,n_2)-1)\]
+
+Then RS find the closed form solution of the recurrence of $n_5$, which is associated  with inner loop, using case analysis. After subsituting $n_5(n_1,n_2)=(n_7(n_2)-1)-n_1$ and getting rid of $n_5((n_1+1),n_2)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.break\_1\_flag_1 = break\_1\_flag_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_2.\neg (((n_7(n_2)-1)-N_1(n_2)>0) \land (0==0))\\
+	&&3.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow ((n_7(n_2)-1)-N_1(n_2)>0)\\
+	&&\hspace*{5em}\land (0==0))\\
+	&&4.\forall n_2.break\_1\_flag_7((n_2+1)) = 0\\
+	&&5.\forall n_2.n_7((n_2+1)) = (n_7(n_2)-1)-N_1(n_2)\\
+	&&6.break\_1\_flag_7(0) = 0, n_7(0) = n\\
+	&&7.\neg (n_7(N_2)>0)\\
+	&&8.\forall n_2.(n_2<N_2) \rightarrow (n_7(n_2)>0)
+\end{eqnarray*}
+
+Then RS find the closed form solution of the recurrence of $n_7$, which is associated  with inner loop, using case analysis. After subsituting $n_7(n_2)=n -\sum_{i=1}^{n_2}N_1(i)-n_2$ and getting rid of $n_7(n_2)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.break\_1\_flag_1 = break\_1\_flag_7(N_2), n_1 = n_7(N_2)\\
+	&&2.\forall n_2.\neg (((n -\sum_{i=1}^{n_2}N_1(i)-n_2-1)\\
+	&&\hspace*{5em}-N_1(n_2)>0) \land (0==0))\\
+	&&3.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow ((n -\sum_{i=1}^{n_2}N_1(i)-n_2-1)\\
+	&&\hspace*{5em}-N_1(n_2)>0) \land (0==0))\\
+	&&4.\neg (n -\sum_{i=1}^{N_2}N_1(i)-N_2>0)\\
+	&&5.\forall n_2.(n_2<N_2) \rightarrow (n -\sum_{i=1}^{n_2}N_1(i)-n_2>0)
+\end{eqnarray*}
+
+\subsection{SPEED 7}
+The following example is taken from benchmark of SPEED~\cite{speed1}.
+\begin{verbatim}
+1.  int x,y,n,m;
+2.  while (n > x)
+3.  {
+4.     if (m > y) {y = y + 1;}
+5.     else { x = x + 1; }
+6.  }
+\end{verbatim}
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following:
+\begin{eqnarray*}
+	&&1.m_1 = m, n_1 = n, y_1 = y_3(N_1), x_1 = x_3(N_1)\\
+	&&2.\forall n_1.y_3((n_1+1)) = ite((m>y_3(n_1)),\\ 
+	&&\hspace*{5em}(y_3(n_1)+1),y_3(n_1))\\ 
+	&&3.\forall n_1.x_3((n_1+1)) = ite((m>y_3(n_1)), \\ &&\hspace*{5em}x_3(n_1),(x_3(n_1)+1))\\ 
+	&&10.y_3(0) = y, x_3(0) = x\\
+	&&11.\neg (n>x_3(N_1))\\
+	&&12.\forall n_1.(n_1<N_1) \rightarrow (n>x_3(n_1))
+\end{eqnarray*}
+
+Then RS find the closed form solution of the conditional recurrence of $x_3$ and $y_3$ using case analysis as follows
+
+\subsubsection{Case 1} When $(m>y_3(0)$ holdes, RS will find the following closed form solution
+
+\begin{eqnarray*}
+	&&y_3(n_1) = ite(0\leq n_1 \leq C_1,y+n_1,y+C_1)\\ 
+	&&x_3(n_1) = ite(0\leq n_1 \leq C_1,x,x+n_1)
+\end{eqnarray*}
+
+We can derived $C_1=m$ by solving following additional axoims
+\begin{eqnarray*}
+	&&\hspace*{-5em}\forall n_1. 0 \leq n_1<C_1 \rightarrow m>n_1 \\
+	&&\hspace*{-5em}\neg (m>C_1)
+\end{eqnarray*}
+
+After subsituting $x_3(n_1)$ and $y_3(n_1)$ and getting rid of $x_3(n_1+1)$ and $y_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.m_1 = m, n_1 = n,\\
+	&&2.y_1 = ite(0\leq N_1 \leq m,y+N_1,y+m)\\
+	&&3.x_1 = ite(0\leq N_1 \leq m,x,x+N_1)\\
+	&&4.\neg (n>ite(0\leq n_1 \leq m,x,x+N_1))\\
+	&&5.\forall n_1.(n_1<N_1) \rightarrow (n>ite(0\leq n_1 \leq m,x,x+n_1))
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{Case_1}=n-x$ from equation (4) and (5).
+
+\subsubsection{Case 2} When $\neg (m>y_3(0)$ holdes, RS will find the following closed form solution
+
+\begin{eqnarray*}
+	&&y_3(n_1) = y\\ 
+	&&x_3(n_1) = x+n_1
+\end{eqnarray*}
+
+
+
+After subsituting $x_3(n_1)$ and $y_3(n_1)$ and getting rid of $x_3(n_1+1)$ and $y_3(n_1+1)$ results the following equations:
+
+\begin{eqnarray*}
+	&&1.m_1 = m, n_1 = n,\\
+	&&2.y_1 = y\\
+	&&3.x_1 = x+N_1\\
+	&&4.\neg (n>x+N_1)\\
+	&&5.\forall n_1.(n_1<N_1) \rightarrow n>x+n_1
+\end{eqnarray*}
+
+Now we can derived that $\mathcal{B}^{\vec{X}}_{Case_2}=n-x$ from equation (4) and (5).

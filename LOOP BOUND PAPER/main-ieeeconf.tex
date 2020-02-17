@@ -1,0 +1,157 @@
+\documentclass[10pt,conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{mdframed}
+\usepackage{fancyvrb}
+\usepackage{parcolumns}
+\usepackage{algorithm2e}
+\usepackage{longtable}
+\usepackage{qtree}
+\usepackage{lipsum}
+\usepackage{adjustbox}
+\usepackage[makeroom]{cancel}
+\usepackage{pbox}
+\usepackage{array}
+\usepackage{bookmark}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{stmaryrd} % semantic     
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+\usepackage{comment}
+%\usepackage[ligature, inference]{semantic}
+%from old version
+\usepackage{booktabs} % For formal tables
+\usepackage{amsmath}
+%\usepackage{amsthm}
+%\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algorithm2e}
+\usepackage{multicol}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{threeparttable}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{color}
+\usepackage{listings} %For code in appendix
+\lstset
+{ %Formatting for code in appendix
+	language=c++,
+	basicstyle=\footnotesize,
+	numbers=left,
+	stepnumber=1,
+	showstringspaces=false,
+	tabsize=1,
+	breaklines=true,
+	breakatwhitespace=false,
+	frame = single, 
+}
+
+\usepackage{url}
+%\usepackage{hyperref}
+\usepackage{stmaryrd} % semantic
+\usepackage[ligature, inference]{semantic}
+
+\usepackage{flexisym}
+\usepackage{mathpartir}
+\usepackage{graphicx}
+\usepackage{caption}
+
+\newcommand{\SystemName}{{\sc NewName}} %% define the tool name
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+
+\newtheorem{defn}{Definition}[section]
+\newtheorem{exmp}{Example}[section]
+%\newtheorem{definition}{Definition}
+%\newtheorem{example}{Example}
+\newtheorem{proposition}{Proposition}
+\newtheorem{proof}{Proof}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcommand{\cL}{{\cal L}}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\begin{document}
+
+\title{Loop Bound Analysis}
+
+
+\author{\IEEEauthorblockN{Pritom Rajkhowa\IEEEauthorrefmark{1} and Peisen Yao\IEEEauthorrefmark{2} and
+		Fangzhen Lin\IEEEauthorrefmark{3}}
+	\IEEEauthorblockA{Department of Computer Science\\
+		The Hong Kong University of Science and Technology\\
+		Clear Water Bay, Kowloon, Hong Kong\\
+		Emails: \IEEEauthorrefmark{1}prajkhowa@cse.ust.hk,\IEEEauthorrefmark{2}pyao@cse.ust.hk
+		\IEEEauthorrefmark{3}flin@cse.ust.hk}
+}
+
+\begin{comment}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address}
+}
+\end{comment}
+
+\maketitle
+
+\begin{abstract}
+Determining the tight upper bounds on the iteration number of a given program can be used in some critical practical applications. Some prominent applications of the tight upper bounds analysis are program complexity analysis and worst-case execution time (WCET) analysis. This paper describes a system which addresses the problem of automatically inferring iteration bounds of imperative program loops. It makes use of a translation from these programs to first-order logic with
+quantifiers on natural numbers. We have implemented our method in a prototype tool \SystemName\ and evaluated it on benchmarks from the literature.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Automatic Program Verification, First-Order Logic, Mathematical Induction, Recurrences, SMT, Arithmetic
+\end{IEEEkeywords}
+
+\input{Intro}	
+\input{translation}
+%\input{preliminaries}
+\input{Overview}	
+\input{Evaluation}
+\input{Related}
+%\input{Conclu}
+
+\bibliographystyle{IEEEtran}
+\bibliography{equiv}
+%\appendix
+%\input{MoreProof}
+%\input{MoreData}
+
+%\onecolumn
+%% Appendix
+\appendix
+\input{appendix}
+
+%\section{Appendix}
+
+
+
+
+
+
+
+\end{document}

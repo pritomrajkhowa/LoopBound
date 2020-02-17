@@ -1,0 +1,196 @@
+\section{Translation}\label{sec:Translation}
+Our translator consider programs in the following language:
+\begin{verbatim}
+E ::= array(E,...,E) |
+operator(E,...,E)
+B ::= E = E |
+boolean-op(B,...,B)
+P ::= array(E,...,E) = E | 
+if B then P else P |
+P; P |
+while B do P 
+\end{verbatim}
+
+%Our system supports the full C99 language (according to the standard ISO/IEC 9899).
+Given a program $P$, and a language $\vec{X}$, our system generates a set of first-order axioms denoted by $\Pi_P^{\vec{X}}$ that captures the changes of $P$ on $\vec{X}$. Here, a language means a set of functions and predicate symbols. For $\Pi_P^{\vec{X}}$ to be correct, $\vec{X}$ needs to include all program variables in $P$ as well as any functions and predicates that can be changed by $P$. The axioms in the set $\Pi_P^{\vec{X}}$ are generated inductively on the structure of $P$. The algorithm is described in detail in \cite{Lin20161}
+and implementation is explained in 
+\cite{DBLP:conf/synasc/pritom17}. The inductive cases of translations are given in the table provided in the supplementary information\footnote{\url{https://github.com/VerifierIntegerAssignment/VIAP_ARRAY/blob/master/Document/Inductive_Translation.pdf}}. We have extended our translation programs with arrays; the extension is described in detail in \cite{viap-array}.
+
+
+The translation for the sequence, conditonal, and while loops remain the same as that of the determinsic programs presented in \cite{Lin20161}.  We have updated those rules by intergrating the simplication process, which are briefly descibed as follows:
+
+
+\begin{defn} \label{Rule3} When \verb-P- is \verb-if B then P1 else P2- then $\Pi_P^{\vec{X}}$ is the set of following axioms:
+	
+\vspace{2mm}
+$B \rightarrow \varphi$, for each $\varphi \in \Pi_{P1}^{\vec{X}},$
+
+\vspace{2mm}
+$\neg B \rightarrow \varphi$, for each $\varphi \in \Pi_{P1}^{\vec{X}},$
+\vspace{2mm}
+
+We assume here that for each boolean expression $B$, there is a corresponding formula $B$ in our first-order language.
+	
+
+\end{defn}
+
+
+Translator uses a systematic technique for the simplifying condition of each axoim $\varphi$ $\in$ $\Pi_P^{\vec{X}}$ of the following form where $\Pi_P^{\vec{X}}$ is the set of axioms generated after the translation of the conditional statement:
+\begin{eqnarray}
+\forall \vec{x}.X_1(\vec{x}) &=& ite(B,\hat{E_{1}},\hat{E}_{2})\label{rec2}
+\end{eqnarray}
+
+where $E_{1}$, $E_{2}$ are the translation of the expressions. It uses two different rules which are presented as follows:
+\begin{itemize}
+	\item When $B$ is boolean expression, and $E_{1}=E_{2}$, then $\varphi$ is simplified to $X_1(\vec{x})=E_{1}$.
+	\item When $B$ is boolean expression, and evaluate $B$ is true, then $\varphi$ is simplified to $X_1(\vec{x})=E_{1}$.
+\end{itemize}
+
+\begin{defn}\label{Rule4} When \verb-P- is \verb-while B do P1- then $\Pi_P^{\vec{X}}$ is the set of following axioms:
+	\vspace{2mm}
+	$\varphi(n)$, for each $\varphi \in \Pi_{P1}^{\vec{X}}$,
+	\vspace{2mm}
+	
+	$X^i(\vec{x})$ = $X^i(\vec{x}, 0)$, for each $X^i \in  \vec{X}$
+	
+	\vspace{2mm}
+	$smallest(N, n, \neg B(n)),$
+	
+	\vspace{2mm}
+	$X^i_1(\vec{x})$ = $X^i(\vec{x}, N)$, for each $X^i \in X$
+	\vspace{2mm}
+	where n is a new natural number variable not already in $\varphi$,
+	and $N$ a new constant not already used in $\Pi_{P1}^{\vec{X}}$. 
+	For each formula or term $\alpha$, $\alpha(n)$ is defined inductively as
+	follows: it is obtained from $\alpha$ by performing the following
+	recursive substitutions:
+	\begin{itemize}
+		\item for each $X^i 
+		\in \vec{X}$ , replace all occurrences of 
+		$X^{i}_1(e_1, ..., e_k)$ by $X^i(e_1(n), ..., e_k(n)$$, n + 1)$, and
+		\item for each program variable $X$ in $\alpha$, replace all occurrences
+		of $X(e_1, ..., e_k)$ by $X(e_1(n), ..., e_k(n), n)$. Notice
+		that this replacement is for every program variable
+		$X$, including those not in $\vec{X}$ .
+	\end{itemize}
+	$smallest(N, n, \neg B(n))$ is a shorthand for the following formula
+	\begin{eqnarray}
+	&& \neg  B(N), \label{smallest1}\\
+	&&\forall n. n< N\rightarrow B(n) \label{smallest2}
+	\end{eqnarray}
+\end{defn}
+
+
+Lets consider $\vec{\sigma}$ represents the set of inductively defined axioms during the translation. If all the condition axioms $\vec{\sigma}$ are of the following form for some $h\geq1$
+\begin{eqnarray}
+\hspace*{1em}X^i(e_1(n), ..., e_k(n),n+1) &=& \nonumber\\
+&&\hspace*{-12em}ite(\theta_1,f_1(X^i(e_1(n), ..., e_k(n)),n),\nonumber\\
+&&\hspace*{-10em}ite(\theta_2,f_2(X^i(e_1(n), ...,e_k(n)),n)...,\nonumber\\ &&\hspace*{-8em}ite(\theta_h,f_h(X^i(e_1(n), ..., e_k(n)),n)\nonumber\\
+&&\hspace*{-6em},f_{h+1}(X^i(e_1(n), ..., e_k(n)),n))), \nonumber\\
+&&\hspace*{-4em} \mbox{ for }1\leq i\leq h \land X^i \in \vec{X}, \label{rec3}
+\end{eqnarray}
+
+where $\theta_1,\theta_2,...,\theta_{h}$ are boolean expressions, and 
+$f_1(x,y),f_2(x,y),....,f_{h+1}(x,y)$ are polynomial functions of $x$ and $y$. The translator uses a systematic technique to reconstruct $\Pi_P^{\vec{X}}$ as following:
+
+\begin{itemize}
+	\item if all the conditions $\theta_i$, $1\leq i\leq h$,
+	in it are independent of the recurrence variable $n$, the translator splits the set of axioms $\Pi_P^{\vec{X}}$ to a sequnce of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, $\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to conditions $\theta_1, \theta_2,...,\theta_h, \theta_{h+1}$ respectively where $\theta_{h+1}   = (\neg \theta_1 \land \neg \theta_2 \land..... \land \neg \theta_h)$.
+	For any $\Pi_i$ such that $1\leq i\leq h$. $\Pi_{P^{1}}^{\vec{X}}$ consist of the following set of axioms along with all non-conditional inductively defined axioms of $\Pi_P^{\vec{X}}$  which corresponds to boolean expression $\theta_i$
+	
+    \vspace{2mm}
+	$X^i(\vec{x},0) = X^i(\vec{x})$,  for each $X^i \in  \vec{X}$
+
+	\vspace{2mm}
+	
+	$smallest(N, n, \neg (B(n) \land \theta_i))$, 
+	
+	\vspace{2mm}
+	$X^i(e_1(n), ..., e_k(n),n+1) = f_i(X^i(e_1(n), ...,e_k(n)),n)$,
+
+	\vspace{2mm} 
+	$X^i_1(\vec{x}) = X^i(\vec{x}, N), \text{ for each $X^i$ $\in X$ }$
+
+	\vspace{2mm}
+
+     Then reconstruct $\Pi_P^{\vec{X}}$ from $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, ,$\Pi_{P^{h+1}}^{\vec{X}}$ following the translation rule definition presented in~\ref{Rule2}.
+     
+	\vspace{2mm}
+	$\varphi(\vec{X_1}/\vec{Y_1}) \rightarrow \varphi$, for each $\varphi \in \Pi_{P^{1}}^{\vec{X}},$
+
+	\vspace{2mm}
+	$\varphi(\vec{X}/\vec{Y_1}) \rightarrow \varphi$, for each $\varphi \in \Pi_{P^{2}}^{\vec{X}}$
+	\vspace{2mm}
+	
+    $\vdots$
+    
+	\vspace{2mm}
+	$\varphi(\vec{X_1}/\vec{Y_h}) \rightarrow \varphi$, for each $\varphi \in \Pi_{P^{h}}^{\vec{X}},$
+
+	\vspace{2mm}
+	$\varphi(\vec{X}/\vec{Y_h}) \rightarrow \varphi$, for each $\varphi \in \Pi_{P^{h+1}}^{\vec{X}}$
+	\vspace{2mm}
+	
+	where any $\vec{Y_i} = (Y^1_{i}, ..., Y^k_{i})$ is a tuple of new function symbols such that each $Y^j_{i}$ is of the same arity as $X^j$
+in $\vec{X}$ such that $1\leq j \leq k$ , $\varphi(\vec{X_1}/\vec{Y_i} )$ is the result of replacing in $\varphi$
+each occurrence of $X^j_1$ by $Y^j_{i}$, and similarly for $\varphi(X/\vec{Y_i})$.
+
+ \item if the condition $\theta_i$, $1\leq i\leq h$, contains only
+ arithmetic comparisons $>$ or $<$, polynomial functions of $n$, and does
+ not mention $X(n)$. Then translator tries to compute the ranges
+ of $\theta_i$ as follows. For each $1\leq i\leq h$, let
+ \[
+ \phi_i = \neg \theta_1\land\cdots\land\neg \theta_{i-1}\land \theta_i.
+ \]
+ Thus $\phi_i$ is the condition
+ for $X(n+1)$ to take the value $f_i(X(n),n)$. Our system then tries
+ to compute $h$ constants $C_1,...C_h$ such that
+ \[
+ 0=C_0<C_1<\cdots<C_h,
+ \]
+ and for each $i\leq h+1$,
+ \vspace{-0.2cm}
+ \begin{eqnarray*}
+ 	&&
+ 	\forall n. C_{i-1}\leq n< C_i\rightarrow \phi_{\pi(i)}(n) , \\
+ 	&&\hspace{20mm}\forall n. n\geq C_i\rightarrow \neg \phi_{\pi(i)}(n).
+ \end{eqnarray*}
+ where $\pi$ is a permutation on $\{1,...,n\}$. The computation of
+ these constants and the associated permutation $\pi$ is done using
+ an SMT solver: it first computes $k$ for which $\phi_k(0)$ holds, and then
+ asks the SMT solver to find a model of
+ \begin{eqnarray*}
+ 	&&
+ 	\forall n. 0\leq n< C\rightarrow \phi_k(n), \forall n. n\geq C\rightarrow \neg \phi_k(n).
+ \end{eqnarray*}
+ If it returns a model, then set $C_1=C$ in the model, and let $\pi(1)=k$,
+ and the process continues until all $C_i$ are computed. If this fails
+ at any point, then the translator aborts this simplification step and return $\Pi_P^{\vec{X}}$ .
+
+Once the system suceeds in computing these constants, the translator reconstruct $\Pi_P^{\vec{X}}$ to a sequnce of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, ,$\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to constants $C_1, C_2,...,C_h, C_{h+1}$ respectively.
+For any $\Pi_i$ such that $1\leq i\leq h$. $\Pi_{P^{1}}^{\vec{X}}$ consist of the following set of axioms along with all non-conditional inductively defined axioms of $\Pi_P^{\vec{X}}$  which corresponds to constant $C_i$
+
+    \vspace{2mm}
+$X^i(\vec{x},0) = X^i(\vec{x})$,  for each $X^i \in  \vec{X}$
+
+\vspace{2mm}
+
+$smallest(N, n, \neg (B(n) \land n<C_i))$, 
+
+\vspace{2mm}
+$X^i(e_1(n), ..., e_k(n),n+1) = f_i(X^i(e_1(n), ...,e_k(n)),n)$,
+
+\vspace{2mm} 
+$X^i_1(\vec{x}) = X^i(\vec{x}, N), \text{ for each $X^i$ $\in X$ }$
+
+\vspace{2mm}
+
+Then reconstruct $\Pi_P^{\vec{X}}$ from $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, ,$\Pi_{P^{h+1}}^{\vec{X}}$ following the translation rule definition presented in~\ref{Rule2} as presented in previous case.
+
+
+	
+\end{itemize}
+
+
+
+

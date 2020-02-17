@@ -1,0 +1,275 @@
+\section{Motivataing Example Illustrating our Technique}
+\label{sec:overview}
+In this section, We illustrate the main ideas of our approach using the above simple example. In~\ref{example_details1},
+we present an iterative implementation of Naive algorithm for pattern searching. In ~\ref{example_details2}, we presentation translated set axioms generated from the input program by \SystemName\. In~\ref{example_details3}, we give explanation of how \SystemName\ automatically derived expected bound. 
+
+
+
+
+
+
+
+
+
+
+\subsection{An Iterative Implementation Zohar Manna's Version of Integer division algorithm}\label{example1_1}
+
+In this example, we illustrate how \SystemName\ find loop bound where all other states of art tools failed to do. In this example, we present an iterative implementation of Zohar Manna's version of integer division algorithm~\cite{Manna:1974:IMT:542899}.
+In~\ref{example1_2}, we present translated set axioms generated from
+the input program by translator module of \SystemName\ . In this example, we give an explanation of how our system automatically derives the loop bound of the program.
+
+
+The C code snippet P with variables $\vec{X}=\{a,b,x,y,z\}$. The two integer variables $a$ and $b$ are assigned with two non-deterministic function call. The algorithm for dividing a number $a$ by another number $b$. When the algorithm terminates, it coming up with a quotient $x$ and a remainder $y$ under the assumption of $a\geq 0$ and $b>0$.
+
+
+\begin{verbatim}
+int a, b, x, y, z;
+a = nondetint(); 
+b = nondetint();
+x = 0; y = 0; z = a;
+assume(a >= 0);  
+assume(b > 0);
+while(z != 0) {
+   if (y + 1 == b)  
+   { 
+      x = x + 1;  
+      y = 0;  
+      z = z - 1; 
+   }
+   else 
+   { 
+      y = y + 1; 
+      z = z - 1; 
+   }
+}
+\end{verbatim}
+
+\subsubsection{Translation of Program}\label{example1_2}
+
+The translation module of \SystemName\ implements Lin's~\cite{Lin20161} translation and generates the following  set of axioms $\Pi^{\vec{X}}_{P}$ for program $P$, where 
+$\vec{X}=\{a,b,x,y,z\}$.
+
+
+\begin{eqnarray*}
+	&&a_1 = nondetint_2, y_1 = y_6(N), b_1 = nondetint_3,\\ 
+	&&x_1 = x_6(N), z_1 = z_6(N),\\
+	&&y_6(0)=0, x_6(0)=0, z_6(0)=nondetint_2,\\
+	&&\forall n. y_6(n+1) = ite((y_6(n)+1)=nondetint_3\\
+	&&\hspace*{5.5em},0,y_6(n)+1),\\
+	&&\forall n. x_6(n+1) = ite((y_6(n)+1)=nondetint_3,\\
+	&&\hspace*{5.5em}x_6(n)+1,x_6(n)),\\
+	&&\forall n. z_6(n+1) = z_6(n)-1,\\
+	&&\neg ( z_6(N)\not=0),\\
+	&&\forall n. n<N\rightarrow  z_6(n)\not=0
+\end{eqnarray*}
+where $a_1$, $b_1$, $z_1$, $x_1$ and $y_1$ denote the output values of $a$, $b$, $z$, $x$ and $y$, respectively,
+$x_6(n)$, $y_6(n)$ and $z_6(n)$ the values of $x$, $y$ and $z$, respectively during the $n$th iteration
+of the loop. The conditional expression $ite(c,e_1,e_2)$ 
+has value $e_1$ if $c$ holds and $e_2$ otherwise. Also
+$N$ is a natural number constant, and the last two axioms say that it
+is exactly the number of iterations the loop executes before exiting.
+
+The translation of assumption results as follows:
+\begin{eqnarray}
+&&\hspace*{-12.5em}nondetint_2\geq0\label{example1eq2}\\
+&&\hspace*{-12.5em}nondetint_3>0 \label{example1eq1} 
+\end{eqnarray}
+
+
+After computing the closed-form solutions
+for $x_6()$ and $y_6()$ by RS,  it substituting them in $\Pi^{\vec{X}}_{P}$ and then \SystemName\ eliminates them, and updated $\Pi^{\vec{X}}_{P}$ which is represented by the following axioms:
+\begin{eqnarray*}
+	&&a_1 = nondetint_2, \\
+	&&z_1 = (nondetint_2-N), \\
+	&&b_1 = nondetint_3,\\
+	&&y_1 = ite(0\leq N \land N<nondetint_3, N,\\ &&ite(N=nondetint_3,0,N-nondetint_3)),\\
+	&&x_1 = ite(0\leq N \land N<nondetint_3,0,1),\\
+	&&\neg ((nondetint_2-N)\not=0), \\
+	&&\forall n. n<N\rightarrow (nondetint_2-n)\not=0
+\end{eqnarray*}
+
+
+\SystemName\ compute the bound $\mathcal{B}^{\vec{X}}_{outer}=N$ by deriving $N_2=n-m+1$ for the following set of equations
+
+\begin{eqnarray*}
+	&&\neg ((nondetint_2-N)\not=0), \\
+    &&\forall n. n<N\rightarrow (nondetint_2-n)\not=0 
+\end{eqnarray*}
+
+
+
+\subsection{An Iterative Implementation of Pattern Searching}\label{example_details1}
+We illustrate the main ideas of our approach using the another simple example. The C code snippet $P$ with variables $\vec{X}=\{n, m, p, t, r, i, j\}$ where $p$, $t$ and $r$ are two inputs integer array variables of size $m$, $n$ and $n$ respectively such that $n > m$. The code snippet $P$ tries to find the occures of pattern $p$ in main text array $t$. If $p$ match any substring in $t$, then it stores the starting index of the matched substring of $t$ in $r$.
+
+
+\begin{verbatim}
+1.  int n, m, i, j, k=0;
+2.  int p[m], t[n], r[n];
+3.  for (i = 0; i <= n - m; i++) { 
+4.      for (j = 0; j < m; j++) 
+5.          if (t[i + j] != p[j]) 
+6.              break; 
+7.      if (j == m){ r[k]=i; k=k+1;}
+}
+\end{verbatim}
+
+The number of comparisons in the worst case is $m*(n-m+1)$. Here we will demonstrate how \SystemName\ automatically derive that. This example to provide an intuitive description of three important aspects of our approach.  Firstly, how the system effectively derive bound without explicitly generating loop invariants. Secondly, how the system effectively handles the program with nested loops. Lastly, how our system handles the program with a unstructured keyword such as break, goto, etc
+
+
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=1\textwidth]{figure1.png}%
+%	\caption{Motivating loop program from recent works ~\cite{kincaid2017non} and %SV-COMP benchmark~\cite{svcompbenchmark}}%
+%	\label{figure1}
+%\end{figure}
+
+%\caption{Motivating loop program from recent works ~\cite{kincaid2017non} and SV-COMP benchmark~\cite{svcompbenchmark}}
+%This simple example to provide an intuitive description how approach out perform some state of art autmatic verifer.
+\subsubsection{Translation of Program}\label{example_details2} 
+
+Our translator would be translated to a set of axioms $\Pi_P^{\vec{X}}$ like the following with resprect to variables $\vec{X}=\{A, B, C, i, j, k, n, d2array\}$:
+\begin{eqnarray*}
+	&&1. p_1 = p, m_1 = m, t_1 = t, n_1 = n, r1 = r\\
+	&&2.\forall x_1,x_2.d1array_1(x_1,x_2) = d1array(x_1,x_2)\\
+	&&3.i_1 = i_{14}(N_2)\\
+	&&4.j_1 = j_{14}(N_2)\\
+	&&5.k_1 = k_{14}(_N2)\\
+	&&6.break\_1\_flag_1 = break\_1\_flag_{14}(N_2)\\
+	&&7.\forall n_1,n_2.j_5(n_1+1,n_2) =\\ &&\hspace*{2em}ite((ite((d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\not=\\
+	&&\hspace*{6em}d1array(p,j_5(n_1,n_2))),1,0)=0),\\
+	&&\hspace*{9em}(j_5(n_1,n_2)+1),j_5(n_1,n_2))\\
+	&&8.\forall n_1,n_2.break\_1\_flag5((n_1+1),n_2) =\\ &&\hspace*{4em}ite((d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\not=\\
+	&&\hspace*{9em}d1array(p,j_{5}(n_1,n_2))),1,0)\\
+	&&9.\forall n_2.j_{5}(0,n_2) = 0\\
+	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)\\
+	&&11.\forall n_2.((j_5(N_1(n_2),n_2)\geq m) \lor \\
+	&&\hspace*{7em} (break\_1\_flag5(N_1(n_2),n_2)\not=0))\\
+	&&12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow ((j5(n_1,n_2)<m) \land\\
+	&&\hspace*{9em} (break\_1\_flag5(n_1,n_2)=0))\\
+	&&13.\forall n_2.i_{14}(n_2+1) =\\ 
+	&&\hspace*{7em}ite((j_5(N_1(n_2),n_2)\not=m),\\
+	&&\hspace*{10em}(i_{14}(n_2)+1),i_{14}(n_2))\\
+\end{eqnarray*}
+\begin{eqnarray*}
+	&&14.\forall n_2.j_{14}(n_2+1) = j_5(N_1(n_2),n_2)\\
+	&&15.\forall n_2.k_{14}(n_2+1) = ite((j_5(N_1(n_2),n_2)=m),\\
+	&&\hspace*{7em}(k_{14}(n_2)+1),k_{14}(n_2))\\
+	&&16.d1array_{14}(x_1,x_2,(n_2+1)) = \\
+	&&\hspace*{5em}ite((j_5(N_1(n_2),n_2)=m),ite(((x_1=r)\\
+	&&\hspace*{7em}\land (x_2=k_{14}(n_2))),(n_2+0),\\
+	&&\hspace*{10em}d1array_{14}(x_1,x_2,n_2)),\\
+	&&\hspace*{12em}d1array_{14}(x_1,x_2,n_2))\\
+	&&17.\forall n_2.break\_1\_flag_{14}((n_2+1))\\
+	&&\hspace*{7em} = break\_1\_flag_{5}(N_1(n_2),n_2)\\
+	&&18.k_{14}(0) = 0\\
+	&&19.j_{14}(0) = j\\
+	&&20.break\_1\_flag_{14}(0) = 0\\
+	&&21.(N_2>(n-m)) \\
+	&&22.(n_2<N_2) \rightarrow (n_2<=(n-m)) 
+\end{eqnarray*}
+
+
+\subsubsection{Bound Analysis}\label{example_details3}
+
+To compute the bound $\mathcal{B}^{\vec{X}}_{Inner}$ using case analysis as system both the equations (11) and (12), which  corresponds to while loop condotion,  involves function(s) generated from program body, the following set of axoims are used 
+\begin{eqnarray*}
+	&&7.\forall n_1,n_2.j_5(n_1+1,n_2) =\\ &&\hspace*{2em}ite((ite((d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\not=\\
+	&&\hspace*{6em}d1array(p,j_5(n_1,n_2))),1,0)=0),\\
+	&&\hspace*{9em}(j_5(n_1,n_2)+1),j_5(n_1,n_2))\\
+	&&8.\forall n_1,n_2.break\_1\_flag5((n_1+1),n_2) =\\ &&\hspace*{4em}ite((d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\not=\\
+	&&\hspace*{9em}d1array(p,j_{5}(n_1,n_2))),1,0)\\
+	&&9.\forall n_2.j_{5}(0,n_2) = 0\\
+	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)\\
+	&&11.\forall n_2.((j_5(N_1(n_2),n_2)\geq m) \lor \\
+	&&\hspace*{7em} (break\_1\_flag5(N_1(n_2),n_2)\not=0))\\
+	&&12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow ((j5(n_1,n_2)<m) \land\\
+	&&\hspace*{9em} (break\_1\_flag5(n_1,n_2)=0))
+\end{eqnarray*}
+
+After analyzing equations, it derives the following cases.
+
+
+\textbf{Case 1} When the following condition is holds 
+
+\begin{eqnarray*}
+	&&\hspace*{-2em}\forall n_1,n_2.(d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\\
+	&&\hspace*{6em}\not=d1array(p,j_{5}(n_1,n_2)))\not= False 
+\end{eqnarray*}
+
+. Now simplify the equation with respect to the assumption.
+\begin{eqnarray*}
+	&&7.\forall n_1,n_2.j_5(n_1+1,n_2) = (j_5(n_1,n_2)+1)\\ 
+	&&8.\forall n_1,n_2.break\_1\_flag5((n_1+1),n_2) =0\\ 
+	&&9.\forall n_2.j_{5}(0,n_2) = 0\\
+	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)
+\end{eqnarray*}
+
+Now solve the above equations using RS  with respect to thier corresponding initial values which results $j_5(n_1,n_2)=n_1$ and $break\_1\_flag5(n_1,n_2)=0$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axoims are as follows:
+
+\begin{eqnarray*}
+	&&11.\forall n_2.(N_1(n_2)\geq m) \lor (0\not=0) \\
+	&&12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<m) \land (0=0)\\
+\end{eqnarray*}
+
+The above set of equations are simplified by getting rid of redundant condition results following a set of equations
+
+\begin{eqnarray*}
+	&&\hspace*{-5em}11.\forall n_2.(N_1(n_2)\geq m)  \\
+	&&\hspace*{-5em}12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<m)\\
+\end{eqnarray*}
+
+From the above equations, \SystemName\ derives $N_1(n_2)=m$ which is the bound $\mathcal{B}^{\vec{X}}_{Inner(case_1)}=m$. 
+
+\textbf{Case 2} When the following condition is holds 
+
+\begin{eqnarray*}
+	&&\hspace*{-2em}\forall n_1,n_2.(n_1<N_1(n_2) \implies\\ &&\hspace*{1em}(d1array(t,(i_{14}(n_2)+j_5(n_1,n_2)))\\ &&\hspace*{2em}\not=d1array(p,j_{5}(n_1,n_2)))\not= False)\land \\
+	&&\hspace*{3em}((d1array(t,(i_{14}(n_2)+j_5(N_1(n_2),n_2)))\\ &&\hspace*{4em}\not=d1array(p,j_{5}(N_1(n_2),n_2)))== False)
+\end{eqnarray*}
+
+Now simplify the equation with respect to the assumption.
+\begin{eqnarray*}
+	&&7.\forall n_1,n_2.j_5(n_1+1,n_2) = ite(0<n_1< N_1(n_2),\\
+	&&\hspace*{8em}j_5(n_1,n_2)+1,j_5(n_1,n_2))\\ 
+	&&8.\forall n_1,n_2.break\_1\_flag5((n_1+1),n_2) = \\
+	&&\hspace*{8em}ite(0<n_1<N_1(n_2),0,1)\\ 
+	&&9.\forall n_2.j_{5}(0,n_2) = 0\\
+	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)
+\end{eqnarray*}
+
+Now solve the above equations using RS  with respect to thier corresponding initial values which results $j_5(n_1,n_2)=ite(0<n_1< N_1(n_2),n_1,N_1(n_2))$ and $break\_1\_flag5(n_1,n_2)=ite(0<n_1< N_1(n_2),0,1)$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axoims are as follows:
+
+\begin{eqnarray*}
+	&&11.\forall n_2.(N_1(n_2)\geq m) \lor (1\not=0) \\
+	&&12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<m) \land (0=0)\\
+\end{eqnarray*}
+
+The above set of equations are simplified by getting rid of redundant condition results following a set of equations
+
+\begin{eqnarray*}
+	&&\hspace*{-6em}11.\forall n_2.(N_1(n_2)\geq m)  \\
+	&&\hspace*{-6em}12.\forall n_1,n_2.(n_1<N_1(n_2)) \rightarrow (n_1<m)\\
+\end{eqnarray*}
+
+From the above equations, \SystemName\ derives $N_1(n_2)=m$ which is the bound $\mathcal{B}^{\vec{X}}_{Inner(case_2)}=m$. Now $\mathcal{B}^{\vec{X}}_{Inner}=max(\mathcal{B}^{\vec{X}}_{Inner(case_1)},\mathcal{B}^{\vec{X}}_{Inner(case_2)})=max(m,m)=m$
+
+
+
+
+
+Similary, \SystemName\ compute the bound $\mathcal{B}^{\vec{X}}_{outer}=n-m+1$ by deriving $N_2=n-m+1$ for the following set of equations
+
+\begin{eqnarray*}
+	&&\hspace*{-6em}21.(N_2>(n-m)) \\
+	&&\hspace*{-6em}22.(n_2<N_2) \rightarrow (n_2<=(n-m)) 
+\end{eqnarray*}
+
+
+
+
+
+
+
+
+

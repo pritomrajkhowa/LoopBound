@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{LOOP BOUND STORY LINE}
+\author{Peisen YAO and Pritom Rajkhowa }
+\date{December 2019}
+
+\begin{document}
+
+\maketitle
+
+\section{High-Level Limitations of Most Existing Works}
+\begin{itemize}
+    \item \textbf{Tightest Upper Bounds}.  Many existing bound analyses cannot ensure that the bound that they infer is the tightest one possible.
+    \item \textbf{Efficient Methods for Expressive Polynomial Bounds}. Previous works do not provide efficient methods to synthesize bounds such as $O(n \times log n)$ or $O(n^r)$, where r is not an integer.
+    
+    \item \textbf{Handing Multi-Path and Nested Loops that contain Non-linear Assignments}. Most existing works cannot handle.
+\end{itemize}
+    
+
+
+
+
+
+\section{Limitations of Existing Recurrence Based Works}
+\begin{itemize}
+\item Existing work based on recurrences analysis either focuses on computing accurate information about syntactically restricted loops (e.g., linear loops, no nested loops, no multi-path loop), or focuses on over-approximate analysis of general loops.  
+\item If they cannot compute the closed forms, then they cannot infer the invariant for analyzing the bounds.
+\end{itemize}
+
+\section{Technical Metrics of Our Approach}:
+\begin{itemize}
+\item In contrast, our approach aims to precisely analyze the accurate semantics of general loops: \textbf{multi-path and nested loops that can have non-linear assignments}. 
+\item \textbf{ Algorithms}: To effectively reason about such loops so that we can compute the bounds, we introduce novel conditional and mutual recurrence loops and semi-decision procedures to compute their closed forms. We also leverage an abstraction-refinement based method for dealing with non-linear arithmetic.
+\item \textbf{Do not strictly depends on the closed forms}: Recurrences and SMT constraints are homogeneous in our approach, which regards recurrences as lazily interpreted functions (LIFs). From the side of recurrence solving, each LIF is associated with a term in the logic of the recurrence solver, whose closed form is the exact representation of the function. If the recurrence solver fails, the LIF is treated just as an uninterpreted, recursive function symbol in the combination theories of uninterpreted functions and integer arithmetic.
+\end{itemize}
+
+
+\section{Evaluation}
+
+\end{document}

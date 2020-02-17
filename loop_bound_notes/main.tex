@@ -1,0 +1,440 @@
+\documentclass[12pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{marginnote}
+\usepackage{algorithm2e}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\newcommand{\yao}[1]{\mytodoblue{[yao: #1]}}
+\newcommand{\mytodoblue}[1]{\textcolor{blue}{\ding{46}~{\sf}~#1}}
+\newcommand{\mytodored}[1]{\textcolor{red}{\ding{46}~{\sf}~#1}}
+
+\title{Bound Loop}
+\author{Peisen YAO and Pritom Rajkhowa}
+\date{Dec 2019}
+
+\begin{document}
+
+\maketitle
+\section{Preliminary}
+Our translation is based on the one described in \cite{Lin20161}.
+It translates a program to
+a set of first-order axioms by introducing for each loop a natural number
+term that denotes the number of iterations the loop ran before it exits. For a while loop like \verb- while E { B }-  of program $P$, it generates the following two formulas:
+
+\yao{the term ``axiom'' is used more often by the AI people. But for the verification people, you just need to use ``first-order formula'' or``first-order constraint''}
+
+\begin{eqnarray}
+&&  \forall \vec{x}.\neg E(\vec{x},N(\vec{x})), \label{smallest1}\\
+&& \forall \vec{x},n. n< N(\vec{x})\rightarrow  E(\vec{x},n) \label{smallest2}
+\end{eqnarray}
+
+\yao{Why there is no sub-formulas encoding semantics about ``B"?}
+
+\yao{It may be better to present a simple example first, to illustrate the major steps/ingredients about your approach, such as the translation, the finding of real roots, etc.}
+
+where $N(\vec{x})$ is a new natural number constant or  function that return a natural number. It denotes the number of iterations that the loop ran before it exits, $\vec{x}$ is the tuple of loop counter natural number variables introduce by translator such that $n \not\in \vec{x}$ and  $E(n)$ a formula denoting the true value of the condition $E$ at the end of the $n^{th}$ iteration of the loop.
+
+The following property about the the equation (\ref{smallest1}) and (\ref{smallest2})  is as follows.
+\begin{proposition}\label{propos1} Let $\vec{x}$ be the set loop counter variables other than $n$ in $E(\vec{x},n)$ and $\forall \vec{x}.N(\vec{x}) >0$ . We have that
+\begin{eqnarray*}
+    &&\hspace*{-4em}\forall \vec{x}.[\forall y.y\geq N(\vec{x}) \rightarrow \neg E(\vec{x},N(\vec{x})) \land \forall n. n< N(\vec{x})\rightarrow  E(\vec{x},n)] \\
+    &&\hspace*{10em}\equiv \forall \vec{x}.[E(\vec{x},N(\vec{x})) \land E(\vec{x},N(\vec{x})-1)]  
+\end{eqnarray*}
+\end{proposition}
+\begin{proposition}\label{propos2}
+Let $f(x)$, $f:\mathbb{N}\rightarrow \mathbb{N}$ , be a polynomial of $x$ where $x$ and all the co-efficient of $f(x)$ are integer 
+\begin{eqnarray}
+	&&f(N)\geq 0 \land \forall n.0\leq n < N \rightarrow f(n)<0\label{theorm1} \label{theorm2}
+\end{eqnarray}
+where n and N are integers. If $\vec{\alpha}$ is a set of real roots of $f(N)=0$, then $\ceil*{\alpha}$ satisfies equation (\ref{theorm1})  where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$. 
+\end{proposition}
+\begin{proof}
+If $\vec{\alpha}$ is a set of roots of $f(N)=0$, then $\ceil*{\alpha}$ satisfies equation (\ref{theorm1}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+As $\alpha$ is the root of $f(N)=0$, then we have the following:
+    \begin{eqnarray}
+    &&f(\alpha)=0\label{theorm_eq1}
+    \end{eqnarray}
+Now $\ceil*{\alpha}=\alpha+\delta$ and $\alpha+\delta-1<\alpha$ where $\delta \in \mathbb{R}$ and $0<\delta<1$. Then we have the following from equation (\ref{theorm_eq1})
+    \begin{eqnarray}
+    &&f(\alpha+\delta)>0\label{theorm_eq2}\\
+    &&f(\alpha+\delta-1)<0\label{theorm_eq3}
+    \end{eqnarray}
+Hence we have successfully proved that $\ceil*{\alpha}$ satisfies equation (\ref{theorm1}).
+\end{proof}
+
+
+\begin{proposition}\label{propos3}
+Let $f(x)$, $f:\mathbb{N}\rightarrow \mathbb{N}$ , be a polynomial of $x$ where $x$ and all the co-efficient of $f(x)$ are integer 
+\begin{eqnarray}
+	&&f(N)>0 \land \forall n.0\leq n < N \rightarrow f(n)\leq0\label{theorm2}
+\end{eqnarray}
+where n and N are integers. If $\vec{\alpha}$ is a set of real roots of $f(N-1)=0$, then $\floor*{\alpha}$ satisfies equation (\ref{theorm2}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+\end{proposition}
+\begin{proof}
+If $\vec{\alpha}$ is a set of roots of $f(N-1)=0$, then $\floor*{\alpha}$ satisfies equation (\ref{theorm2}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+As $\alpha$ is the root of $f(N-1)=0$, then we have the following:
+    \begin{eqnarray}
+    &&f(\alpha-1)=0\label{theorm_eq4}
+    \end{eqnarray}
+Now $\floor*{\alpha}=\alpha-\delta$ and $\alpha-\delta+1>\alpha$ where $\delta \in \mathbb{R}$ and $0<\delta<1$. Then we have the following from equation (\ref{theorm_eq1})
+    \begin{eqnarray}
+    &&f(\alpha-\delta-1)<0\label{theorm_eq5}\\
+    &&f(\alpha-\delta+1-1)>0\label{theorm_eq6}
+    \end{eqnarray}
+Hence we have successfully proved that $\floor*{\alpha}$ satisfies equation (\ref{theorm2}).
+\end{proof}
+\begin{proposition}\label{propos4}Given a program $P$ with the loop \verb- while E { B }-  and bound $\mathcal{B}$ of that corresponding loop, the drive the value of $N(\vec{x})$  from the equation (\ref{smallest1}) and (\ref{smallest2}) of the translated set of axioms $\Pi_{P}^{\vec{X}}$ of the program represents the bound such that 
+\begin{itemize}
+    \item $N(\vec{x})=\floor*{f(\vec{x},\vec{Y})}$, if and only if it satisfies following
+    \begin{eqnarray}
+    &&\hspace*{-4em}\forall \vec{x}.[\forall y.y\geq \floor*{f(\vec{x},\vec{Y})} \rightarrow \neg E(\vec{x},\floor*{f(\vec{x},\vec{Y})}) \land \nonumber\\
+    &&\hspace*{10em}\forall n. n< \floor*{f(\vec{x},\vec{Y})}\rightarrow  E(\vec{x},n)] \label{smallest5}
+   \end{eqnarray}
+    
+    \item $N(\vec{x})=\ceil*{f(\vec{x},\vec{Y})}$, if and only if satisfies following
+    \begin{eqnarray}
+    &&\hspace*{-4em}\forall \vec{x}.[\forall y.y\geq \ceil*{f(\vec{x},\vec{Y})} \rightarrow \neg E(\vec{x},\ceil*{f(\vec{x},\vec{Y})}) \land \nonumber\\
+    &&\hspace*{10em}\forall n. n< \ceil*{f(\vec{x},\vec{Y})}\rightarrow  E(\vec{x},n)]\label{smallest6}
+   \end{eqnarray}
+\end{itemize}
+where $f$ is an polynomial in terms of $\vec{x}$ and $\vec{Y}$ is the set of input variables of program $P$.
+
+\end{proposition}
+\begin{proof}
+The equation (\ref{smallest1}) and (\ref{smallest2}) are rewrote in the following form as presented in proposition~\ref{propos1}:
+\begin{eqnarray}
+    &&\forall \vec{x}.[E(\vec{x},N(\vec{x})) \land E(\vec{x},N(\vec{x})-1)] \label{smallest3}
+\end{eqnarray}
+Then normalized to axiom of $E(\vec{x},N(\vec{x}))$ and $E(\vec{x},N(\vec{x}-1))$ such all the term moved to left hand side. Each of those axiom is transformed to the form of $F(\vec{x},N(\vec{x}))\sim 0$ and $F(\vec{x},N(\vec{x})-1)\sim 0$ respectively, where  $\sim \in \{<, \leq, >, \geq, =, \not=\}$ and $F$ is an polynomial .
+\begin{itemize}
+    \item When $\sim \in \{\leq, \geq, =\}$ for $F(\vec{x},N(\vec{x}))\sim 0$, then solve polynomial equation $F(\vec{x},N(\vec{x}))= 0$ for $N(\vec{x})$. 
+    Then derive $N(\vec{x}) = \ceil*{f(\vec{x},\vec{Y})}$ as presented in~\ref{propos2}.
+    \item When $\sim \in \{\leq, \geq, =\}$ for $F(\vec{x},N(\vec{x})-1)\sim 0$, then solve polynomial equation $F(\vec{x},N(\vec{x}))= 0$ for $N(\vec{x})$. 
+    Then derive $N(\vec{x}) = \floor*{f(\vec{x},\vec{Y})}$ as presented in~\ref{propos3}.
+\end{itemize}
+\end{proof}
+
+\begin{algorithm}
+\DontPrintSemicolon % Some LaTeX compilers require you to use \dontprintsemicolon instead
+\KwIn{$\Pi_{P}^{\vec{X}}$ is the set of  first-order axioms; $\alpha$ is the set of pre-conditions }
+\KwOut{$\mathcal{B}$ is a set of bounds }
+$\mathcal{B} \leftarrow \emptyset$\;
+\For  { $\varphi_{i}$ $\in$ $\Pi_{P}^{\vec{X}}$  } {
+    \If {($\varphi_{i}$ is of the form (\ref{smallest1}) or (\ref{smallest2}))}
+    {
+    \uIf{$\varphi_{i}$ is \ref{smallest2}}
+    {
+        Rewrote $\varphi_{i}$ in the form presented in \ref{smallest3} \;
+        Normalized $\varphi_{i}$ to $F(\vec{x},N(\vec{x})-1)\sim 0$\;
+    }
+    \Else{
+        Normalized $\varphi_{i}$ to $F(\vec{x},N(\vec{x}))\sim 0$\;
+    }
+    
+    \If{$\sim \in \{\leq, \geq, =\}$ of $F(\vec{x},N(\vec{x}))\sim 0$ }
+    {
+        Solve the equation $F(\vec{x},N(\vec{x}))= 0$ for real root $N(\vec{x})$;\;
+        \If{$\floor*{f(\vec{x},\vec{Y})}$  is real and positive solution of $F(\vec{x},N(\vec{x}))= 0$ and it satisfies \ref{smallest6} with respect to $\alpha$}
+        {
+            $\mathcal{B}$ = $\mathcal{B} \cup \floor*{f(\vec{x},\vec{Y})}$
+        }
+        
+    }
+    \If{$\sim \in \{\leq, \geq, =\}$ of $F(\vec{x},N(\vec{x}-1))\sim 0$ }
+    {
+        Solve the equation $F(\vec{x},N(\vec{x})-1)= 0$ for real root $N(\vec{x})$;\;
+        \If{$\ceil*{f(\vec{x},\vec{Y})}$  is real and positive solution of $F(\vec{x},N(\vec{x})-1)= 0$ and it satisfies \ref{smallest5} with respect to $\alpha$}
+        {
+            $\mathcal{B}$ = $\mathcal{B} \cup \ceil*{f(\vec{x},\vec{Y})}$
+        }
+    }
+    }
+
+}
+
+\Return{$\mathcal{B}$}\;
+\caption{{\sc BOUNDFIND} finds loop bound}
+\label{algo:found_bound1}
+\end{algorithm}
+
+\begin{theorem}\textbf{(Soundness)}\label{thm1}
+Consider program $P$ with loops $L_1$, . . . , $L_m$ with corresponding conditional expression $E_1$, . . . , $E_m$ where $m\geq 1$.  The translation of program $P$ results a set of axioms $\Pi^{\vec{X}}_{P}$. Each condition $E_i$ is represented by following axioms as follows such that $1\leq i \leq m$:
+\begin{eqnarray}
+&&  \forall \vec{x}.\neg E(\vec{x},N_i(\vec{x})), \label{smallest7}\\
+&& \forall \vec{x},n. n< N_i(\vec{x})\rightarrow  E(\vec{x},n) \label{smallest8}
+\end{eqnarray}
+where $E(\vec{x},N_i(\vec{x}))$ or $E(\vec{x},N_i(\vec{x})-1)$ polynomial of $\vec{x}$,$N_i(\vec{x})$ and solvable for $N_i(\vec{x})$ and have positive real root(s).
+Algorithm~\ref{algo:found_bound1} can find the bounds  $B^{\forall \vec{x}.N_1(\vec{x})},$...$,B^{\forall \vec{x}.N_m(\vec{x})}$ for corresponding loops  $L_1$, . . . , $L_m$ respectively.
+\end{theorem}
+\begin{theorem}\textbf{(Termination)}\label{thm2}
+Consider program $P$ with loops $L_1$, . . . , $L_m$, the translation of the program generate a set of axioms $\Pi_{P}^{\vec{X}}$. Algorithm~\ref{algo:found_bound1} terminates for $\Pi_{P}^{\vec{X}}$ after $O(\mathcal{N}^{\Pi_{P}^{\vec{X}}})$ where $\mathcal{N}^{\Pi_{P}^{\vec{X}}}$ number of axioms in $\Pi_{P}^{\vec{X}}$.
+\end{theorem}
+\begin{proof}
+Both~\ref{thm1} and ~\ref{thm2} can be easily prove. The ~\ref{thm1} can be proved using proposition~\ref{propos4}.
+\end{proof}
+
+\section{Motivation Examples}
+As motivating examples for this research work, we can cite two different programs to demonstrate how the proposed approach works and addresses the limitation of the existing state of the art approaches. These motivating examples provide an intuitive description of three important aspects of our approach. Firstly, the newly proposed approach used  Lin's translation to derive the loop bound. Secondly, we demonstrate how our approach successfully finds the loop bound programs with the non-linear loops body, nested loop, multi-path loops body, and loop body with the non-deterministic assignment. It is important to mention that the handling of such programs is one of the major limitations of existing approaches. Some of the approaches adopt the strategy to compute accurate information about syntactically restricted loops. But these strategies are not suitable to handle these programs exposes there limitations. Our new proposed approach addresses all these issues. Lastly, our approach provides efficient methods to synthesize loop bound with such as $O(n \times log n)$ or $O(n^r)$, where r is not an integer.
+
+\begin{verbatim}
+  i= A;
+  while (i>1){
+     k=1;
+     j=1;
+     while(j<=n)
+     {
+        k++;
+        j+=k;
+     }
+     i= i/2;
+}
+\end{verbatim}
+
+Here is the C code snippet $P_1$ with variables $\vec{X}=\{A,i,j,k\}$.  The translation outlined in \cite{Lin20161} would generate the following axioms $\Pi_{P}^{\vec{X}}$:
+\begin{eqnarray*}
+	&& A_1 = A, i_1 = i_6(N_2), k_1 = k_6(N_2), j_1 = j_6(N_2),\\ 
+	&& k_2((n_1+1),n_2) = (k_2(n_1,n_2)+1),\\
+	&& j_2((n_1+1),n_2) = (j_2(n_1,n_2)+(k_2(n_1,n_2)+1)),\\
+	&& k_2(0,n_2) = 1, j_2(0,n_2) = 1,\\
+    && \neg (j_2(N_1(n_2),n_2)\leq A),\\
+    &&(n_1<N_1(n_2)) \rightarrow (j_2(n_1,n_2)\leq A),\\
+	&& i_6((n_2+1)) = (i_6(n_2)/2),\\
+	&& k_6((n_2+1)) = k_2(N_1(n_2),n_2),\\
+	&& j_6((n_2+1)) = j_2(N_1(n_2),n_2),\\
+	&& i_6(0) = A, k_6(0) = 0, j_6(0) = 0,\\
+	&& \neg (i_6(N_2)>0), (n_2<N_2) \rightarrow (i_6(n_2)>0)
+\end{eqnarray*}
+
+
+Then we passed $\Pi_{P}^{\vec{X}}$ to cost calculating algorithm which returns following cost equation :
+\begin{eqnarray*}
+	&&Cost_{\Pi_{P}^{\vec{X}}}= 1+(N_2-1)+N_2\times(1+1+(N_1(n_2)-1)+\\
+	&&\hspace*{5em}N_1(n_2)\times(2+2)+2)
+\end{eqnarray*}
+
+
+With some simplification (including finding the closed recurrence relations generated during the translation), the resulted in a set of the following axioms $\Pi_{P}^{\vec{X}}$:
+\begin{eqnarray*}
+	&& A_1 = A, i_1 = A\times 2^{(-N_2)}, k_1 = N_1(N_2-1)+1,\\ 
+	&& j_1 = ((N_1(N_2-1)+1)\times(N_1(n_2)+1)/2),\\
+	&&\neg ((N_1(n_2)+1)\times(N_1(n_2)+1)/2) \leq A),\\  
+	&&(n_1<N_1(n_2)) \rightarrow (((N_1(n_2)+1)\times(N_1(n_2)+1)/2)\leq A),\\    
+	&&\neg (A \time 2^{(-N_2)}>1),(n_2<N_2) \rightarrow (A \time2^{(-n_2)}>1).
+\end{eqnarray*}
+
+where $A$ denotes the input of the program variable \verb-A-, $A_1$ is the output. Similar conventions apply to variables \verb-i-, \verb-j- and \verb-k-. $N_2$ is a system-generated natural number constant denoting
+the number of iterations that the outer loop runs before exiting. $N_1$ is a system-generated natural number function denoting that
+for each $k$, $N_1(k)$ is
+the number of iterations that the inner loop runs during the $k^{th}$ iteration
+of the outer loop.
+
+Now $BOUNDFIND$ select $\neg (A \times 2 ^{(-N_2)}>1)$ and updated the equation of the form  $N_2==log_{2}A$ from the following axioms 
+\begin{eqnarray*}   
+	&&\neg (A \time 2^{(-N_2)}>1)
+\end{eqnarray*}
+
+$BOUNDFIND$ successfuly derive loop bound of the outer most loop $\mathcal{B}^{N_2}=log_{2}A$. Similarly from inner most loop $BOUNDFIND$ select $(((N_1(n_2)-1+1)\times(N_1(n_2)-1+1)/2)\leq A)$ and updated the equation of the form  $N_1(n_2)\times N_1(n_2)/2 -A==0$ from the following axioms 
+\begin{eqnarray*}   
+	&&(n_1<N_1(n_2)) \rightarrow (((N_1(n_2)+1)\times(N_1(n_2)+1)/2)\leq A)
+\end{eqnarray*}
+
+The $\beta$ $(N_1(n_2)=[\sqrt{2 \times A},\sqrt{-2 \times A}]$ are root of $N_1(n_2)\times N_1(n_2)/2 -A==0$ find by $EQSOLV$. By considering real and postive root, $BOUNDFIND$ successfuly derive loop bound of the inner most loop $\mathcal{B}^{\forall n_2. N_1(n_2)}=\sqrt{2 \times A}$. Hence, total loop bound can be calculated as follows:
+\begin{eqnarray*}
+	&&\mathcal{B}=\mathcal{B}^{N_2} \times \mathcal{B}^{\forall n_2. N_1(n_2)}=log_{2}A \times \sqrt{2 \times A}
+\end{eqnarray*}
+
+
+
+Now substituting bound values in corresponding places in cost equation results following:
+\begin{eqnarray*}
+	&&Cost_{\Pi_{P}^{\vec{X}}}= 1+(log_{2}A-1)+log_{2}A\times(1+1+(\sqrt{2 \times A}-1)+\\
+	&&\hspace*{5em}\sqrt{2 \times A}\times(2+2)+2)
+\end{eqnarray*}
+
+
+
+\begin{verbatim}
+ int A, i = A, k = 0, j = 0;
+ while (i > 1)
+ {
+      j = i;
+      k = 0;
+      while (j <= A)
+      {
+          k = 0;
+          while (k < A)
+            {
+               k = k + 2;
+            }
+
+         j = j * 2;
+       }
+     i = i / 2;
+  }
+\end{verbatim}
+
+
+Here is the C code snippet $P_1$ with variables $\vec{X}=\{A,i,j,k\}$. The translation outlined in \cite{Lin20161} would generate the following axioms $\Pi_{P}^{\vec{X}}$:
+\begin{eqnarray*}
+	&& A_1 = A, i_1 = i_9(N_3), k_1 = k_9(N_3), j_1 = j_9(N_3),\\ 
+	&& k_2((n_1+1),n_2,n_3) = (k_2(n_1,n_2,n_3)+2),\\
+	&& k_2(0,n_2,n_3) = 0,\\
+	&& \neg (k_2(N_1(n_2,n_3),n_2,n_3)<A)\\
+	&& (n1_<N_1(n_2,n_3)) \rightarrow (k_2(n_1,n_2,n_3)<A),\\
+	&& k_5((n_2+1),n_3) = k_2(N_1(n_2,n_3),n_2,n_3),\\
+	&& j_5((n_2+1),n_3) = (j_5(n_2,n_3)*2),\\
+	&& k_5(0,n_3) = 0, j_5(0,n_3) = i_9(n_3)\\
+	&& \neg (j_5(N_2(n_3),n_3)\leq A)\\
+	&& (n_2<N_2(n_3)) \rightarrow (j_5(n_2,n_3)\leq A)\\
+	&& i_9((n_3+1)) = (i_9(n_3)/2)\\
+	&& k_9((n_3+1)) = k_5(N_2(n_3),n_3)\\
+	&& j_9((n_3+1)) = j_5(N_2(n_3),n_3)\\
+	&& i_9(0) = A, k_9(0) = 0, j_9(0) = 0,\\
+	&& \neg (((i_9(N_3))+1)>0)\\
+	&&(n_3<N_3) \rightarrow (i_9(n_3)>1)
+\end{eqnarray*}
+
+Then we passed $\Pi_{P}^{\vec{X}}$ to cost calculating algorithm which returns following cost equation  :
+\begin{eqnarray*}
+&&Cost_{\Pi_{P}^{\vec{X}}}=1+1+1+(N_3+1)+N_3\times(1+1+(N_2(n_3)+1)+N_2(n_3)\\
+&&\hspace*{5em}\times(1+(N_1(n_2,n_3)+1)+N_1(n_2,n_3)\times(2)+2)+2)
+\end{eqnarray*}
+
+
+With some simplification (including finding the closed recurrence relations generated during the translation), the translation outlined in \cite{Lin20161} would generate the following axioms:
+\begin{eqnarray*}
+	&& A_1 = A, i_1 = A\times  2^{-N_3} , k_1 = N_1(N_2(N_3-1)-1,N_3-1), \\
+	&&j_1 = A\times 2^{N_3-1}\times 2^{N_2(N_3-1)},\\ 
+	&&\neg (N_1(n_2,n_3)<A),(n_1<N_1(n_2,n_3)) \rightarrow n_1<A)\\
+	&&\neg (2^{-n_3}\times 2^{N_2(n_3)} \leq A)\\
+	&&(n_2<N_2(n_3)) \rightarrow (2^{-n_3}\times 2^{n_2}\leq A)\\
+	&&\neg (A\times 2^{-N_3}>1)\\
+	&&(n_3<N_3) \rightarrow (A\times 2^{-n_3}>1)
+\end{eqnarray*}
+
+
+
+where $A$ denotes the input of the program variable \verb-a-, $A_1$ is the output. Similar conventions apply to variables \verb-i-, \verb-j- and \verb-k-. $N_2$ is a system-generated natural number constant denoting
+the number of iterations that the outer loop runs before exiting. $N_3$ is a system-generated natural number function denoting that
+for each $k$, $N_2(k)$ is
+the number of iterations that the inner loop runs during the $k^{th}$ iteration
+of the outer loop. $N_1(k,l)$ is
+the number of iterations that the innermost loop runs during the $k^{th}$ iteration
+of the inner loop  and  the $l^{th}$ iteration
+of the outer loop.
+\marginnote{Need to workout how to resolve loop counter varibles $n_2, n_2, n_3$. Asymptotic presentation need to do.}[3cm]
+
+Now $BOUNDFIND$ select $\neg (A\times 2^{-N_3}>1)$ and updated the equation of the form  $N_3==log_{2}A$ from the following axioms:
+\begin{eqnarray*}   
+	&&\neg (A\times 2^{-N_3}>1)
+\end{eqnarray*}
+$BOUNDFIND$ successfuly derive loop bound of the outer most loop $\mathcal{B}^{N_3}=log_{2}A$. Similarly from first inner most loop $BOUNDFIND$ select $(2^{-n_3}\times 2^{N_2(n_3)-1}\leq A)$ and updated the equation of the form  $(2^{-n_3}\times 2^{N_2(n_3)-1}\leq A)$ from the following axiom: 
+\begin{eqnarray*}   
+	&&(n_2<N_2(n_3)) \rightarrow (2^{-n_3}\times 2^{n_2}\leq A)
+\end{eqnarray*}
+
+The $BOUNDFIND$ successfuly derive loop bound of the first inner loop $\mathcal{B}^{\forall n_3. N_2(n_3)}=log_{2}A+n_3$. Similarly, $BOUNDFIND$ successfuly derive loop bound of the inner most loop $\mathcal{B}^{\forall n_2,n_3. N_1(n_2,n_3)}=A$ from the following axiom:
+\begin{eqnarray*}   
+	&&\neg (N_1(n_2,n_3)<A)
+\end{eqnarray*}
+
+
+
+Hence, total loop bound can be calculated as follows:
+\begin{eqnarray*}
+	&&\mathcal{B}=\mathcal{B}^{N_1}\times \mathcal{B}^{\forall n_3. N_2(n_3)} \times \mathcal{B}^{\forall n_2,n_3. N_1(n_2,n_3)}= (log_{2}A) \times (log_{2}A+n_3) \times A
+\end{eqnarray*}
+
+
+Now substituting bound values in corresponding places in cost equation results following:
+\begin{eqnarray*}
+	&&Cost_{\Pi_{P}^{\vec{X}}}=1+1+1+(log_{2}A+1)+log_{2}A\times(1+1+(log_{2}A+n_3+1)\\
+	&&\hspace*{5em}+log_{2}A+n_3\times(1+(A+1)+A\times(2)+2)+2)
+\end{eqnarray*}
+
+
+
+
+
+To illustrate how our system works, consider the following program for computing the integer square root of a given non-negative integer $X$:
+%Sympy \cite{SymPylib}
+%\newline
+\begin{verbatim}
+a=0;  
+su=1; 
+t=1;
+assume(X>=0);
+while ( su <= X ) {
+  a=a+1;  
+  t=t+2;  
+  su=su+t; 
+}
+\end{verbatim}
+
+\subsection{Goal}
+
+The goal is to find the loop bound in terms of input value $X$ with respect to pre-condition $X>=0$.
+
+
+
+\subsection{Our Approach To Find Bound}
+
+With some simplification, the translation outlined in \cite{Lin20161} would generate the following axioms:
+\begin{eqnarray*}
+	&& X_1 = X,\\
+	&& a_1 = a_3(N),\ \  a_3(0) = 0,\\  
+	&& a_3(n+1) = a_3(n)+1,\\
+	&& t_1 = t_3(N),\ \  t_3(0) = 1,\\  
+	&& t_3(n+1) = t_3(n)+2,\\
+	&& su_1 = su_3(N),\ \  su_3(0) = 1,\\
+	&& su_3(n+1) = su_3(n)+t_3(n)+2,\\
+	&& \neg (su_3(N)\leq X),\\
+	&& (n<N) \rightarrow (su_3(n)\leq X),
+\end{eqnarray*}
+where $a$ denotes the input of the program variable \verb-a-, $a_1$ is the output, and $a_3(n)$ is a temporary function denoting the value of \verb-a- after the $n$th iteration of the while loop. Similar conventions apply to
+$X$, $t$, $su$ and their
+subscripted versions. The constant $N$ is introduced to denote the number of
+iterations of the while loop before it exits. The variable $n$ ranges over
+natural numbers and is universally quantified.
+
+By using RS, our translator computes closed-form solutions
+for $a_3()$, $t_3()$, and $su_3()$, eliminates them, 
+and produces the following axioms:
+\begin{eqnarray*}
+	&& X_1 = X,\ \ 
+	a_1 = N,\ \ 
+	t_1 = 2N+1,\\ 
+	&& su_1 = N^2+2N+1,\\
+	&& (N^2+2N+1> X),\\
+	&& (n<N) \rightarrow (n^2+2n+1\leq X).
+\end{eqnarray*}
+
+%Now $BOUNDFIND$ select $(n<N) \rightarrow (n^2+2n+1\leq X)$ and updated the equation of the form  $(N^2-N-X)==0$
+
+Now $BOUNDFIND$ select $(N-1)^2+2(N-1)+1-X\leq 0$ and updated the equation of the form  $(N-1)^2+2(N-1)+1-X==0$. The $\beta$ $(N=[\frac{1}{2}\times(\sqrt{4X+1}-1),\frac{1}{2}\times(\sqrt{4X+1}+1))]$ is root of $N + 1-1-X==0$ find by $EQSOLV$. $BOUNDFIND$ add 
+$\beta$ in $\mathcal{B}$ and return  $\mathcal{B}$.
+
+\bibliographystyle{IEEEtran}
+%\bibliographystyle{splncs03}
+\bibliography{M335}
+
+
+\end{document}

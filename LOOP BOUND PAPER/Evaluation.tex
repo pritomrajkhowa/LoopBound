@@ -1,0 +1,104 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+\SystemName\ is implemented  as a stand-alone application, which uses Sympy \cite{joyner2012open} computer algebra system  and Z3 \cite{de2008z3} SMT solver.
+The current implementation of \SystemName\ executes using a single thread. The tool along with source code is  publicly available  in the following URL:
+
+\url{https://github.com/VerifierIntegerAssignment/LoopBoundTool}
+
+\SystemName\ is integrated with our recurnce solver framework, RS, to solve a recurrence. All of the experiments are conducted using Intel$\circledR$ Core\texttrademark\ i3 1.8 GHz processor running with 4GB of memory, Ubuntu 16.04 LTS. The source code and the full experiments are available on
+
+\url{https://github.com/pritomrajkhowa/}
+
+\subsection{Benchmarks}
+ Our evaluation subjects include a set of C programs gathered 60 challenging loop and recursion patterns from previous publications~\cite{Gulwani:2010:RP:1806596.1806630,speed1,Carbonneaux:2015:CCR:2737924.2737955}. These programs can be divided into three categories
+\begin{itemize}
+	\item 30 programs are from a benchmark suite of $C^4B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} which is used compared capabitity of $C^4B$ with state-of-art bounds generated tools KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, LOOPUS~\cite{10.1007/978-3-319-08867-9_50}, SPEED~\cite{speed1} and PUBS~\cite{Albert:2012:CAO:2076807.2077025} in its experiment
+	
+	\item 20 programs are from the open-source code. Most of the state-of-art bounds generated tools cannot handle these programs. We have chosen these programs to demonstrate the gap exists in current bound generation tools.
+	
+	\item Another 10 programs are from the open-source code. The main purpose of selection of these program to demonstrate how our tool derive non-linear bound of the programs.  
+	
+
+	
+	
+
+	
+	%\item 15 programs are composed by us. This is class of multi-path (more than two execution path) programs with loops which include some non-linear assertion as well. We composed these program which often contain multiple loops or loop body with multiple conditions.
+	
+\end{itemize}
+
+
+
+
+
+\subsection{Experimental setup}
+
+
+We performed an empirical evaluation in order to answer the following research questions:
+
+\begin{itemize} 
+	%\item \textbf{RQ1} What is the primary objective of selection of benchmark programs?
+	
+	\item \textbf{RQ1} How effectiveness can \SystemName\ derived loop bound of programs compared to the state-of-the-art tools? 
+	\item \textbf{RQ2} How our system \SystemName\ tried to fill some of the gap which exits in the curently avaiable state-of-the-art tools?
+\end{itemize}
+
+
+
+\subsection{Results}
+
+
+%\subsubsection{\textbf{\textit{RQ1}}}
+%The primary objective of the selection of benchmark programs to demostrates that %\SystemName\ can handle program with nondeterministic assignments, non-linear %arithmetic or nested loops which most of the state-of-art failed to 
+%from \cite{kincaid2017non} is to demonstrate how \SystemName\ can effectively handle programs with multi-path execution body.
+
+%The columns labeled ``Time'' indicate how long the tool took on each program pair in seconds.  ``TO'' indicates that the tool did not terminate in 500 seconds.
+
+\subsubsection{\textbf{\textit{RQ1}}} 
+
+%To provide a comparison point, we also ran five state-of-the-art fully automated tool for verification or loop-invariant, CPAChecker~\cite{CPAChecker-Tool}, UAutomizer~\cite{UAutomizer-Tool}, ICRA \cite{kincaid2017non}, VeriAbs~\cite{Chimdyalwar:2017:VVA:3080455.3080493}, and Seahorn~\cite{Gurfinkel2015}, generation on the same benchmarks. The main criteria for selecting the system are  
+%\vspace{-0.2cm}
+%\begin{itemize}
+%	\item The system's must be fully automated tool for verification or loop-invariant generation which means a system that verifies a program with only assumption and assertion as specifications given as user input written in C language.
+%	\item  Tools must be maintained, so we can consider their latest version.
+%\end{itemize}
+%\vspace{-0.2cm}
+%CPAChecker~\cite{CPAChecker-Tool} and UAutomizer~\cite{UAutomizer-Tool} are the state-ofthe-art program verifiers. We use the versions of CPAChecker and UAutomizer  which used for SV-COMP 2019. ICRA \cite{kincaid2017non} is a program
+%verifier which generates invariants based on combines symbolic analysis and abstract interpretation which use recurrence-solving techniques. 
+
+%The results of our evaluation is presented in Table \ref{lbl:evaluation}. For each tool, we record the status and execution time in second. Table \ref{lbl:evaluation} shows that  \SystemName\  were able to prove the partial correctness overwhelming majority of programs to which it was applied. \SystemName\ outperforms competitively compared to the other tools on these benchmarks. It is important state that \SystemName\ have outperformed ICRA \cite{kincaid2017non} in its own set of benchmarks. \SystemName\ takes $53$  seconds on average to prove benchmarks of ICRA \cite{kincaid2017non}. ICRA is the fastest among all the tools we have considered in comparison which took the average $10$ seconds.  The main overhead of \SystemName\  comes from  solving recurrences and in some cases applying proof strategy. 
+
+%\SystemName\ can also handle complex loop program as well as the program of non-linear nature like ICRA
+%Similarly, \SystemName\ can also handle complex loop program as well as the program of non-linear nature like ICRA \cite{kincaid2017non}. It also outperform ICRA \cite{kincaid2017non}. On another hand, other tool failed to do so.
+
+
+
+\subsubsection{\textbf{\textit{RQ2}}} 
+%\vspace{-0.4cm}
+%We have observed the integration of RS significantly improved the capacity of our tool \SystemName\ . The results are shown in the 4 and 6 columns of Table \ref{lbl:evaluation} where \SystemName\ without RS can successfully verify the assertion of only 34 programs out of 67. After integration of RS, \SystemName\  can successfully verify the assertion of 54 programs out of 67. Our first version of the system (\SystemName\ 1.0) competed at SV-COMP 2018. The new version (\SystemName\ 1.1) which is presented in this paper that makes use of our newly developed recurrence solver, competed at SV-COMP 2019. As a result, \SystemName\ 1.1(with RS) is able to verify many programs that were out of reach for the older version \SystemName\ 1.0(without RS)\footnote{\url{https://sv-comp.sosy-lab.org/2019/results/results-verified/}}. The main reason is that solving quantified non-linear arithmetics is challenging for current SMT solver. RS can help simplify the formula by geting rid of as many reucnce relations by finding closed form solution which help SMT solver in finding answer.
+
+
+
+
+%\begin{table*}[]
+%	\centering
+	
+%	\caption{Shows the results of the experiments
+%		to check assertions.  The two columns under
+%		each tool show the running time (in seconds)
+%		and the number of proved assertions.}
+%	\label{lbl:evaluation}
+%	\scalebox{0.9}{
+%		\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+%			\hline
+%			\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Benchmark\\ Suite\end{tabular}} & Total & \multicolumn{2}{l|}{ \SystemName} & \multicolumn{2}{l|}{\SystemName+RS} & \multicolumn{2}{l|}{VeriAbs} & \multicolumn{2}{l|}{Sea} & \multicolumn{2}{l|}{ICRA} & \multicolumn{2}{l|}{UAut.} & \multicolumn{2}{l|}{CPA.} \\ \cline{2-16} 
+%			& \#A   & Time     & \#A     & Time    & \#A    & Time     & \#A     & Time     & \#A     & Time     & \#A     & Time    & \#A  & Time    & \#A    \\ \hline
+%			HOLA  & 46    & 2454     &    20 &  2188.7    &     40    &  1303.6        & 25     &  354   &38     & 235.7    &33       & 1641.9         &20    & 2004.1 & 11       \\ \hline
+%			functional  & 21    & 1251     &    14 &  1375    &     14    &  1057        & 5     &  251  &4     & 167.3     &11       & 863         &0    & 833 & 0       \\ \hline
+%			Total  & 67    & 3705     &    34 &  3563    &     54    &  2360.6        & 30     &  605   &42     & 399     &44       & 2244.9         &20    & 2837.1 & 11       \\ \hline
+%	\end{tabular}}
+%\end{table*}
+
+
+
