@@ -86,6 +86,17 @@
 \usepackage{mathtools}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+\usepackage{pifont}
+\newcommand{\mytodoblue}[1]{\textcolor{blue}{\ding{46}~{\sf}~#1}}
+\newcommand{\mytodored}[1]{\textcolor{red}{\ding{46}~{\sf}~#1}}
+
+\newcommand{\yao}[1]{\mytodoblue{[yao: #1]}}
+\newcommand{\wu}[1]{\mytodoblue{[rongxin: #1]}}
+
+
+
 \begin{document}
 
 \title{Loop Bound Analysis}

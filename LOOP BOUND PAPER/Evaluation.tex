@@ -6,14 +6,14 @@ The current implementation of \SystemName\ executes using a single thread. The t
 
 \url{https://github.com/VerifierIntegerAssignment/LoopBoundTool}
 
-\SystemName\ is integrated with our recurnce solver framework, RS, to solve a recurrence. All of the experiments are conducted using Intel$\circledR$ Core\texttrademark\ i3 1.8 GHz processor running with 4GB of memory, Ubuntu 16.04 LTS. The source code and the full experiments are available on
+\SystemName\ is integrated with our recurrence solver framework, RS, to solve a recurrence. All of the experiments are conducted using Intel$\circledR$ Core\texttrademark\ i3 1.8 GHz processor running with 4GB of memory, Ubuntu 16.04 LTS. The source code and the full experiments are available on
 
 \url{https://github.com/pritomrajkhowa/}
 
 \subsection{Benchmarks}
  Our evaluation subjects include a set of C programs gathered 60 challenging loop and recursion patterns from previous publications~\cite{Gulwani:2010:RP:1806596.1806630,speed1,Carbonneaux:2015:CCR:2737924.2737955}. These programs can be divided into three categories
 \begin{itemize}
-	\item 30 programs are from a benchmark suite of $C^4B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} which is used compared capabitity of $C^4B$ with state-of-art bounds generated tools KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, LOOPUS~\cite{10.1007/978-3-319-08867-9_50}, SPEED~\cite{speed1} and PUBS~\cite{Albert:2012:CAO:2076807.2077025} in its experiment
+	\item 30 programs are from a benchmark suite of $C^4B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} which is used compared capability of $C^4B$ with state-of-art bounds generated tools KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, LOOPUS~\cite{10.1007/978-3-319-08867-9_50}, SPEED~\cite{speed1} and PUBS~\cite{Albert:2012:CAO:2076807.2077025} in its experiment
 	
 	\item 20 programs are from the open-source code. Most of the state-of-art bounds generated tools cannot handle these programs. We have chosen these programs to demonstrate the gap exists in current bound generation tools.
 	
@@ -41,10 +41,8 @@ We performed an empirical evaluation in order to answer the following research q
 	%\item \textbf{RQ1} What is the primary objective of selection of benchmark programs?
 	
 	\item \textbf{RQ1} How effectiveness can \SystemName\ derived loop bound of programs compared to the state-of-the-art tools? 
-	\item \textbf{RQ2} How our system \SystemName\ tried to fill some of the gap which exits in the curently avaiable state-of-the-art tools?
+	\item \textbf{RQ2} How our system \SystemName\ tried to fill some of the gap which exits in the currently available state-of-the-art tools?
 \end{itemize}
-
-
 
 \subsection{Results}
 

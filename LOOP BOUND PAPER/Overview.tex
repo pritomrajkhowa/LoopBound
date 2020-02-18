@@ -1,4 +1,4 @@
-\section{Motivataing Example Illustrating our Technique}
+\section{Motivating Example Illustrating our Technique}
 \label{sec:overview}
 In this section, We illustrate the main ideas of our approach using the above simple example. In~\ref{example_details1},
 we present an iterative implementation of Naive algorithm for pattern searching. In ~\ref{example_details2}, we presentation translated set axioms generated from the input program by \SystemName\. In~\ref{example_details3}, we give explanation of how \SystemName\ automatically derived expected bound. 
@@ -99,7 +99,7 @@ for $x_6()$ and $y_6()$ by RS,  it substituting them in $\Pi^{\vec{X}}_{P}$ and 
 
 
 \subsection{An Iterative Implementation of Pattern Searching}\label{example_details1}
-We illustrate the main ideas of our approach using the another simple example. The C code snippet $P$ with variables $\vec{X}=\{n, m, p, t, r, i, j\}$ where $p$, $t$ and $r$ are two inputs integer array variables of size $m$, $n$ and $n$ respectively such that $n > m$. The code snippet $P$ tries to find the occures of pattern $p$ in main text array $t$. If $p$ match any substring in $t$, then it stores the starting index of the matched substring of $t$ in $r$.
+We illustrate the main ideas of our approach using the another simple example. The C code snippet $P$ with variables $\vec{X}=\{n, m, p, t, r, i, j\}$ where $p$, $t$ and $r$ are two inputs integer array variables of size $m$, $n$ and $n$ respectively such that $n > m$. The code snippet $P$ tries to find the occurs of pattern $p$ in main text array $t$. If $p$ match any substring in $t$, then it stores the starting index of the matched substring of $t$ in $r$.
 
 
 \begin{verbatim}
@@ -205,7 +205,7 @@ After analyzing equations, it derives the following cases.
 	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)
 \end{eqnarray*}
 
-Now solve the above equations using RS  with respect to thier corresponding initial values which results $j_5(n_1,n_2)=n_1$ and $break\_1\_flag5(n_1,n_2)=0$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axoims are as follows:
+Now solve the above equations using RS  with respect to their corresponding initial values which results $j_5(n_1,n_2)=n_1$ and $break\_1\_flag5(n_1,n_2)=0$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axioms are as follows:
 
 \begin{eqnarray*}
 	&&11.\forall n_2.(N_1(n_2)\geq m) \lor (0\not=0) \\
@@ -238,7 +238,7 @@ Now simplify the equation with respect to the assumption.
 	&&10.\forall n_2.break\_1\_flag5(0,n_2) = break\_1\_flag_{14}(n_2)
 \end{eqnarray*}
 
-Now solve the above equations using RS  with respect to thier corresponding initial values which results $j_5(n_1,n_2)=ite(0<n_1< N_1(n_2),n_1,N_1(n_2))$ and $break\_1\_flag5(n_1,n_2)=ite(0<n_1< N_1(n_2),0,1)$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axoims are as follows:
+Now solve the above equations using RS  with respect to their corresponding initial values which results $j_5(n_1,n_2)=ite(0<n_1< N_1(n_2),n_1,N_1(n_2))$ and $break\_1\_flag5(n_1,n_2)=ite(0<n_1< N_1(n_2),0,1)$. After substituting the solution and get rid of equations (7), (8), (9) and (10) with resulted set of axioms are as follows:
 
 \begin{eqnarray*}
 	&&11.\forall n_2.(N_1(n_2)\geq m) \lor (1\not=0) \\

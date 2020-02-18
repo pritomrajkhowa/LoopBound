@@ -17,7 +17,7 @@ and implementation is explained in
 \cite{DBLP:conf/synasc/pritom17}. The inductive cases of translations are given in the table provided in the supplementary information\footnote{\url{https://github.com/VerifierIntegerAssignment/VIAP_ARRAY/blob/master/Document/Inductive_Translation.pdf}}. We have extended our translation programs with arrays; the extension is described in detail in \cite{viap-array}.
 
 
-The translation for the sequence, conditonal, and while loops remain the same as that of the determinsic programs presented in \cite{Lin20161}.  We have updated those rules by intergrating the simplication process, which are briefly descibed as follows:
+The translation for the sequence, conditonal, and while loops remain the same as that of the deterministic programs presented in \cite{Lin20161}.  We have updated those rules by integrating the simplification process, which are briefly described as follows:
 
 
 \begin{defn} \label{Rule3} When \verb-P- is \verb-if B then P1 else P2- then $\Pi_P^{\vec{X}}$ is the set of following axioms:
@@ -95,7 +95,7 @@ $f_1(x,y),f_2(x,y),....,f_{h+1}(x,y)$ are polynomial functions of $x$ and $y$. T
 
 \begin{itemize}
 	\item if all the conditions $\theta_i$, $1\leq i\leq h$,
-	in it are independent of the recurrence variable $n$, the translator splits the set of axioms $\Pi_P^{\vec{X}}$ to a sequnce of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, $\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to conditions $\theta_1, \theta_2,...,\theta_h, \theta_{h+1}$ respectively where $\theta_{h+1}   = (\neg \theta_1 \land \neg \theta_2 \land..... \land \neg \theta_h)$.
+	in it are independent of the recurrence variable $n$, the translator splits the set of axioms $\Pi_P^{\vec{X}}$ to a sequence of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, $\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to conditions $\theta_1, \theta_2,...,\theta_h, \theta_{h+1}$ respectively where $\theta_{h+1}   = (\neg \theta_1 \land \neg \theta_2 \land..... \land \neg \theta_h)$.
 	For any $\Pi_i$ such that $1\leq i\leq h$. $\Pi_{P^{1}}^{\vec{X}}$ consist of the following set of axioms along with all non-conditional inductively defined axioms of $\Pi_P^{\vec{X}}$  which corresponds to boolean expression $\theta_i$
 	
     \vspace{2mm}
@@ -167,7 +167,7 @@ each occurrence of $X^j_1$ by $Y^j_{i}$, and similarly for $\varphi(X/\vec{Y_i})
  and the process continues until all $C_i$ are computed. If this fails
  at any point, then the translator aborts this simplification step and return $\Pi_P^{\vec{X}}$ .
 
-Once the system suceeds in computing these constants, the translator reconstruct $\Pi_P^{\vec{X}}$ to a sequnce of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, ,$\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to constants $C_1, C_2,...,C_h, C_{h+1}$ respectively.
+Once the system succeeds in computing these constants, the translator reconstruct $\Pi_P^{\vec{X}}$ to a sequence of set of axioms $\Pi_{P^{1}}^{\vec{X}}$, $\Pi_{P^{2}}^{\vec{X}}$,...,$\Pi_{P^{h}}^{\vec{X}}$, ,$\Pi_{P^{h+1}}^{\vec{X}}$ corresponding to constants $C_1, C_2,...,C_h, C_{h+1}$ respectively.
 For any $\Pi_i$ such that $1\leq i\leq h$. $\Pi_{P^{1}}^{\vec{X}}$ consist of the following set of axioms along with all non-conditional inductively defined axioms of $\Pi_P^{\vec{X}}$  which corresponds to constant $C_i$
 
     \vspace{2mm}
