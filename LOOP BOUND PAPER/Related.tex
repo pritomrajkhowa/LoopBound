@@ -14,7 +14,15 @@ As a result, non-linear symbolic bounds of multi-path loops are obtained by depl
 Another important approach which also uses counter is ~\cite{Knoop:2011:SLB:2341512.2341532}. But it contrasts SPEED~\cite{speed1}, it uses recurrence equations and introduces a counter for each loop path. 
 
 \subsection{Recurrence solving and Cost Analysis} 
-Recurrence solving is also used in~\cite{10.1007/978-3-642-17511-4_7,Henzinger:2008:VVT:1484209.1484240} [3, 9]. The work presented in [9] derives loop bounds by solving arbitrary C-finite recurrences and deploying quantifier elimination over integers and real closed fields. To this end, ~\cite{Henzinger:2008:VVT:1484209.1484240} uses some algebraic algorithms as black-boxes built upon the computer algebra system Mathematica [23]. Contrarily to ~\cite{Henzinger:2008:VVT:1484209.1484240}, we only solve C-finite recurrences of order 1, but, unlike ~\cite{Henzinger:2008:VVT:1484209.1484240}, we do not rely on computer algebra systems and handle more complex multi-path loops. Symbolic loop bounds in ~\cite{10.1007/978-3-642-17511-4_7} are inferred over arbitrarily nested loops with polynomial dependencies among loop iteration variables. To this end, C-ﬁnite and hypergeometric recurrence solving are used. Unlike ~\cite{10.1007/978-3-642-17511-4_7}, we only handle C-ﬁnite recurrences of order 1. Contrarily to ~\cite{10.1007/978-3-642-17511-4_7}, we, however, design ﬂow refinement techniques to make our approach scalable to the WCET analysis of programs.
+Recurrence solving is also used in~\cite{10.1007/978-3-642-17511-4_7,Henzinger:2008:VVT:1484209.1484240}.
+The work presented in ?? derives loop bounds by solving arbitrary C-finite recurrences and deploying quantifier elimination over integers and real closed fields. 
+To this end, ~\cite{Henzinger:2008:VVT:1484209.1484240} uses some algebraic algorithms as black-boxes built upon the computer algebra system Mathematica. 
+
+Contrarily to ~\cite{Henzinger:2008:VVT:1484209.1484240}, we only solve C-finite recurrences of order 1, but, unlike ~\cite{Henzinger:2008:VVT:1484209.1484240}, we do not rely on computer algebra systems and handle more complex multi-path loops.
+Symbolic loop bounds in~\cite{10.1007/978-3-642-17511-4_7} are inferred over arbitrarily nested loops with polynomial dependencies among loop iteration variables. 
+To this end, C-finiteand hypergeometric recurrence solving are used.
+Unlike ~\cite{10.1007/978-3-642-17511-4_7}, we only handle C-finite recurrences of order 1.
+%Contrarily to ~\cite{10.1007/978-3-642-17511-4_7}, we, however, design ﬂow refinement techniques to make our approach scalable to the WCET analysis of programs.
 
 
 

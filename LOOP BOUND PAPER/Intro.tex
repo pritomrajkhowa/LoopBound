@@ -1,45 +1,72 @@
 \section{Introduction}
 \label{sec:intro}
-%The aim of loop bound analysis is to obtain static information about the upper bound on the number iterations of each loop of a given program during any execution of the program. The loop bound analysis has been widely used in different applications such as resource certification, complexity analysis, and worst case execution time (WCET) analysis.
-Static analysis of a program's quantitative behavior plays an important role in code optimization and verification. This information can be used to automatically prove certain program properties such as safety property, termination, and time complexity of the program. 
-%Physical resources are the most important component in the execution of a program. 
-Specially memory-constrained environments such as embedded software systems must satisfy resource-constraints. To ensure the reliability of such programs, it important to prove that these programs terminate on any input within some time and memory limit 
-%For example, stack and heap-space bounds are important
-%to ensure the reliability of safety-critical systems
-~\cite{Regehr:2005:ESO:1113830.1113833}. In autonomous systems and application of cloud computing~\cite{Carroll:2010:APC:1855840.1855861,Cohen:2012:ET:2398857.2384676}, it is critical to find and monitor static energy usage information. Worst-case time bounds
-can help create constant-time implementations that prevent side-channel attacks~\cite{Barthe:2014:SNC:2660267.2660283,Kasper:2009:FTR:1617722.1617724}. These examples address one of the fundamental questions that quantitative resource information can provide useful feedback for developers.
 
-However, time complexity analysis is useful for any systems working with large data. Consider, for example, sorting algorithms: some of them are practically useless for very large arrays because they could spend hours sorting them, while other finish the computation within seconds. Most of the current static analysis tools in this area compute only termination or an asymptotic complexity of a program. But one can see that there is a significant difference between time complexities $n^2$ and $1000$· $n^2$ , while the asymptotic complexity is the same. We present an algorithm for computing more precise time bounds. The need for the precision can be seen in the embedded systems: hardware which has to perform $n$ operations within a certain time limit is more expensive than the hardware which has to perform just $n$ operations.
+Static analysis of a program's quantitative behavior plays an important role in code optimization and verification. 
+Such information can be used to automatically prove certain program properties such as safety property, termination, and time complexity of the program. 
+%Specially memory-constrained environments such as embedded software systems must satisfy resource-constraints. 
+%%To ensure the reliability of such programs, it is therefore important to prove that these programs terminate on any input within some time and memory limit 
+%~\cite{Regehr:2005:ESO:1113830.1113833}. 
+In autonomous systems and application of cloud computing~\cite{Carroll:2010:APC:1855840.1855861,Cohen:2012:ET:2398857.2384676}, it is critical to find and monitor static energy usage information. 
+Worst-case time bounds
+can help create constant-time implementations that prevent side-channel attacks~\cite{Barthe:2014:SNC:2660267.2660283,Kasper:2009:FTR:1617722.1617724}. 
+These examples address one of the fundamental questions that quantitative resource information can provide useful feedback for developers.
 
-Research interest in the field of loop bound analysis is quite recent. The most and development have occurred in the last decade. Previous works such as tools like SPEED~\cite{speed1}, KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, PUBS~\cite{Albert:2012:CAO:2076807.2077025}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, and LOOPUS~\cite{10.1007/978-3-319-08867-9_50} take a
-imperative program P and always derive a sound bounds for numerical. 
+%However, time complexity analysis is useful for any systems working with large data. Consider, for example, sorting algorithms: some of them are practically useless for very large arrays because they could spend hours sorting them, while other finish the computation within seconds. Most of the current static analysis tools in this area compute only termination or an asymptotic complexity of a program. But one can see that there is a significant difference between time complexities $n^2$ and $1000$· $n^2$ , while the asymptotic complexity is the same. We present an algorithm for computing more precise time bounds. The need for the precision can be seen in the embedded systems: hardware which has to perform $n$ operations within a certain time limit is more expensive than the hardware which has to perform just $n$ operations.
+
+Research interest in the field of loop bound analysis is quite recent. 
+The most and development have occurred in the last decade. 
+Previous works such as tools like SPEED~\cite{speed1}, KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, PUBS~\cite{Albert:2012:CAO:2076807.2077025}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, and LOOPUS~\cite{10.1007/978-3-319-08867-9_50} take a
+imperative program $P$ and always derive a sound bounds for numerical. 
 %Most of these tool lack compositionality. 
 There are another category of tools which are based on the method
-of amortized analysis and type systems for functional programs~\cite{Hoffmann:2012:MAR:2362389.2362393,Hofmann:2003:SPH:604131.604148,Hofmann:2006:TAH:2182132.2182135}. The major drawback of these tools is that they
-can only associate potential with individual program variables or data structures. There is another categories of tools, such as CAMPY~\cite{Srikanth:2017:CVU:3009837.3009864} and $C^{4}B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} , which provide user interaction to manual proofs of resource bounds. 
-\yao{It is more important to summarize the technical dimensions and limitations, instead of the "techniques they use''}
+of amortized analysis and type systems for functional programs~\cite{Hoffmann:2012:MAR:2362389.2362393,Hofmann:2003:SPH:604131.604148,Hofmann:2006:TAH:2182132.2182135}. 
+The major drawback of these tools is that they
+can only associate potential with individual program variables or data structures. 
+There is another categories of tools, such as CAMPY~\cite{Srikanth:2017:CVU:3009837.3009864} and $C^{4}B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} , which provide user interaction to manual proofs of resource bounds. 
 
-In this work, we introduce a new framework for automatically deriving resource bounds on C programs. Another additional feature this framework provides is that when a tool fails to find a resource bound for the input program, then it provides sound user interaction during bound derivation. We have named the framework as \SystemName\ which take a program P from the programmer and translate it to a set of axioms of first-order logic with quantifiers on natural numbers proposed recently by Lin. Then it uses a translated set of axioms derived the resource bound of the input program. When it failed to derive any bound, then it expected bound value $B$ from the programmer. \SystemName\ produces either  of the following output
+Despite the tremendous research progress,  we observe that there are still several limitations in existing approaches:
 \begin{itemize}
-	\item prove that input bound value $B$ satisfied on all inputs by the program $P$ using translated axioms.
-	\item produce a counterexample if $B$ satisfied for some input.
+	\item \textbf{Tightest upper bounds}.  Many existing bound analyses cannot ensure that the bound that they infer is the tightest one possible.
+	\item \textbf{Efficient methods for expressive non-polynomial bounds}. Previous works do not provide efficient methods to synthesize bounds such as $O(n \times log n)$ or $O(n^r)$, where r is not an integer.
+	\item  \textbf{Scope of supported programs}. Many existing works cannot handle multi-path and nested Loops that contain non-linear assignments
 \end{itemize}
 
+In this work, we introduce \SystemName, a new framework for automatically deriving resource bounds on C programs. 
+%Another additional feature this framework provides is that when a tool fails to find a resource bound for the input program, then it provides sound user interaction during bound derivation. 
+\SystemName\ take a program $P$ and translates it to a set of  quantified first-order constraints over natural numbers. 
+%proposed recently by Lin. 
+Then it derives resource bounds from the translated set of constraints.
+%When it failed to derive any bound, then it expected bound value $B$ from the programmer. \SystemName\ produces either  of the following output
+%\begin{itemize}
+%	\item prove that input bound value $B$ satisfied on all inputs by the program $P$ using translated axioms.
+%	\item produce a counterexample if $B$ satisfied for some input.
+%\end{itemize}
 
-Compared to more classical approaches based on ranking functions or amortized reasoning, our tool inherits the benefits of not explicitly generate any invariant.
-However, state-of-the-art classical approaches are often unable or inefficient to derive suitable non-linear invariants to find suitable resource bounds. For example, inferring non-linear invariants is a long-standing challenge for conventional safety property verifiers as well~\cite{ball2001automatic,mcmillan2006lazy}. The crux of our technique is to derive non-linear bound resource bounds by constructing a proof that runs of a program path satisfy a given that. \SystemName\'s ability to
-reason about non-linear behavior the fact that it uses decision procedure for the
-combination of theories of linear arithmetic and uninterpreted functions. We use auxiliary uninterpreted functions to abstract nonlinear functions to build an initial abstraction, then the theorem
-prover lazily refines an approximation of the theory of non-linear. If it finds a model, it tests the model as
-a model of the path formula under the standard model of non-linear
-arithmetic. This place our approach in an advantageous position as compared to other state-of-the-art which failed to find the resource bounds the program with the non-linear body. Another core technical contribution of \SystemName\ is that our technique does not require special or separate analysis for compositional resource
-analysis, like exiting approaches~\cite{Carbonneaux:2015:CCR:2737924.2737955}, because of the flexibility provided by our translation. The translated axioms give the relationship between the input and output values of the program variables which provide us the pliability to reason about any property of the program.
+\begin{itemize}
+	\item \SystemName\ features a strong recurrence solver which is capable of finding closed forms—effectively of a certain class of P-finite and C-finite recurrences relations as well as certain classes of conditional
+	recurrences, a simple case of mutual recurrences and multivariable recurrence relations.  
+	This enables 
+	\SystemName\ to infer resource bounds on C programs with mutually-recursive functions and  complex loops, as well as to derive precise and non-polynomial bounds.
+	\item Compared to more classical approaches based on ranking functions or amortized reasoning, \SystemName\ does not explicitly generate any invariant.
+	State-of-the-art classical approaches are often unable or inefficient to derive suitable non-linear invariants to find suitable resource bounds. 
+	For example, inferring non-linear invariants is a long-standing challenge for conventional safety property verifiers as well~\cite{ball2001automatic,mcmillan2006lazy}. 
+\end{itemize}
 
-In particular, \SystemName\ is integrated with strong recurrence solver which is capable of finding closed forms—effectively of a certain class of P-finite and C-finite recurrences relations as well as certain classes of conditional
-recurrences, a simple case of mutual recurrences and multivariable recurrence relations.  \SystemName\ can is able to infer resource bounds on C programs with mutually-recursive functions and nested loops.
+\yao{I think the refinement-based SMT is just an important optimization. 
+Maybe only need to mention it a bit, and explain more in the technical part}
+%The crux of our technique is to derive non-linear bound resource bounds by constructing a proof that runs of a program path satisfy a given that. \SystemName\'s ability to
+%reason about non-linear behavior the fact that it uses decision procedure for the
+%combination of theories of linear arithmetic and uninterpreted functions.
 
+%We use auxiliary uninterpreted functions to abstract nonlinear functions to build an initial abstraction, then the theorem
+%prover lazily refines an approximation of the theory of non-linear. If it finds a model, it tests the model as
+%a model of the path formula under the standard model of non-linear
+%arithmetic. This place our approach in an advantageous position as compared to other state-of-the-art which failed to find the resource bounds the program with the non-linear body. 
+%Another core technical contribution of \SystemName\ is that our technique does not require special or separate analysis for compositional resource
+%analysis, like exiting approaches~\cite{Carbonneaux:2015:CCR:2737924.2737955}, because of the flexibility provided by our translation. 
+%The translated constraints give the relationship between the input and output values of the program variables which provide us the pliability to reason about any property of the program.
 
-However, we want to highlight the major weakness of existing approaches with the help of the following examples of C code snippet
+Let us first highlight the major weakness of existing approaches with the help of the following examples of C code snippet
 
 \begin{center}
 	\begin{tabular}{ l | c }
@@ -68,7 +95,7 @@ However, we want to highlight the major weakness of existing approaches with the
 	\end{tabular}
 \end{center}
 
-The potential-based techniques and amortized analysis base tool $C^{4}B$ can easily find the bound for the program $P_1$ where $C^{4}B$ return the bound $1.00 |[0, C]|$ for the program $P_1$. But all the tools including $C^{4}B$ failed to find the bound for the program $P_2$. \SystemName\ can find the bound of both programs $ |[0, C-x]|$ and $ |[0, (C-x-y)/2]|$ for $P_1$ and $P_2$ respectively. To illustrate how \SystemName\ works, consider the program $P_2$. Lin's~\cite{Lin20161} translation of the above program $P$ generates the following a set of axioms $\Pi^{\vec{X}}_{P}$ after some simple simplifications where $\vec{X}=\{x,y,C\}$
+The potential-based techniques and amortized analysis base tool $C^{4}B$ can easily find the bound for the program $P_1$ where $C^{4}B$ return the bound $1.00 |[0, C]|$ for the program $P_1$. But all the tools including $C^{4}B$ failed to find the bound for the program $P_2$. \SystemName\ can find the bound of both programs $ |[0, C-x]|$ and $ |[0, (C-x-y)/2]|$ for $P_1$ and $P_2$ respectively. To illustrate how \SystemName\ works, consider the program $P_2$. Lin's~\cite{Lin20161} translation of the above program $P$ generates the following a set of constraint $\Pi^{\vec{X}}_{P}$ after some simple simplifications where $\vec{X}=\{x,y,C\}$
 \begin{eqnarray*}
 	&& C_1=C , x_1 = x_3(n), y_1 = y_3(n), \\
 	&& x_3(0) = x, y_3(0) = y, \\
@@ -80,8 +107,8 @@ The potential-based techniques and amortized analysis base tool $C^{4}B$ can eas
 where  $x_1$, $y_1$ and $C_1$ denote the output values of $a$, $b$, $z$, $x$ and $y$, respectively,
 $x_6(n)$ and $y_6(n)$ the values of $x$ and $y$ during the $n$th iteration
 of the loop, respectively. Also
-$N$ is a natural number constant, and the last two axioms say that it
-is exactly the number of iterations the loop executes before exiting. Our recurrence solving tool recSolve(RS) can find the closed-form solutions of $x_3(n)$ and $y_3(n)$, which yields the closed-form solution $x_3(n)=n-x$ and $y_3(n)=n-y$ respectively. Those can be used to simplify the recurrence for $y_3(n)$ into following set of axoims after eliminates recurrence relation for $x_3()$, and $y_3()$
+$N$ is a natural number constant, and the last two constraints say that it
+is exactly the number of iterations the loop executes before exiting. Our recurrence solving tool recSolve(RS) can find the closed-form solutions of $x_3(n)$ and $y_3(n)$, which yields the closed-form solution $x_3(n)=n-x$ and $y_3(n)=n-y$ respectively. Those can be used to simplify the recurrence for $y_3(n)$ into following set of constraints after eliminates recurrence relation for $x_3()$, and $y_3()$
 \begin{eqnarray*}
 	&& x_1 = N+x, y_1 = N+y, C_1=C,\\
 	&& (2*N+x+y \geq C) \\
@@ -93,10 +120,10 @@ The system tried to derive using algorithm $XXX$ derived $N=(C-x-y)/2$, then it 
 
 
 
-
+\yao{The following paragraph is too long and talks about too much details. }
 We have recently constructed a fully automated program verification
-system called \SystemName\ \cite{DBLP:conf/synasc/pritom17,viap-array}, for programs with integer assignments and arrays. \SystemName\ is based on the translation Lin \cite{Lin20161} which translates the programs to first-order logic with quantifiers over natural numbers. Translation of the loop body in the program generates a number of axioms based on recursive relationships. Simplify the translated set of axioms by
-trying to compute closed-form solutions of recursive relationships. Simplification process help to reduced quantified axioms which help it reducing the complexity in theorem proving. The translation of multi-path programs with loops results in conditional recurrences. Our proposed recurrence solver (RS) which is capable of finding closed-form solutions of conditional recurrences is integrated with \SystemName\ which clearly shows its effectiveness in performance on state-of-art benchmark programs. The theorem proving part uses Z3 directly when the translated axioms have no inductive definitions.
+system called \SystemName\ \cite{DBLP:conf/synasc/pritom17,viap-array}, for programs with integer assignments and arrays. \SystemName\ is based on the translation Lin \cite{Lin20161} which translates the programs to first-order logic with quantifiers over natural numbers. Translation of the loop body in the program generates a number of constraints based on recursive relationships. Simplify the translated set of constraints by
+trying to compute closed-form solutions of recursive relationships. Simplification process help to reduced quantified constraints which help it reducing the complexity in theorem proving. The translation of multi-path programs with loops results in conditional recurrences. Our proposed recurrence solver (RS) which is capable of finding closed-form solutions of conditional recurrences is integrated with \SystemName\ which clearly shows its effectiveness in performance on state-of-art benchmark programs. The theorem proving part uses Z3 directly when the translated constraints have no inductive definitions.
 Otherwise, our system searches for a proof by mathematical induction using
 Z3 as the base theorem prover. 
 
@@ -113,7 +140,7 @@ To summarize, this paper makes the following key contributions:
 	
 	\item It can detect logarithmic bounds.
 	
-	\item It distinguishes diﬀerent branches inside loops and computes bounds for each of them separately.
+	\item It distinguishes different branches inside loops and computes bounds for each of them separately.
 	
 	\item We prove the soundness of the analysis.
 	
