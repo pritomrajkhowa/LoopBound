@@ -1,23 +1,15 @@
 \section{Motivating Example Illustrating our Technique}
 \label{sec:overview}
-In this section, We illustrate the main ideas of our approach using the above simple example. In~\ref{example_details1},
-we present an iterative implementation of Naive algorithm for pattern searching. In ~\ref{example_details2}, we presentation translated set axioms generated from the input program by \SystemName\. In~\ref{example_details3}, we give explanation of how \SystemName\ automatically derived expected bound. 
+In this section,  we illustrate the main ideas of our approach using a simple example. In~\ref{example_details1},
+we present an iterative implementation of Naive algorithm for pattern searching. In ~\ref{example_details2}, we present the translated set axioms generated from the input program by \SystemName\. In~\ref{example_details3}, we give explanation of how \SystemName\ automatically derives the expected bound. 
 
 
+\subsection{An Iterative Implementation Zohar Manna's  Integer division algorithm}\label{example1_1}
 
-
-
-
-
-
-
-
-\subsection{An Iterative Implementation Zohar Manna's Version of Integer division algorithm}\label{example1_1}
-
-In this example, we illustrate how \SystemName\ find loop bound where all other states of art tools failed to do. In this example, we present an iterative implementation of Zohar Manna's version of integer division algorithm~\cite{Manna:1974:IMT:542899}.
+In this example, we illustrate how \SystemName\ finds loop bound where all other state-of-the-art tools failed to do. 
+In this example, we present an iterative implementation of Zohar Manna's version of integer division algorithm~\cite{Manna:1974:IMT:542899}.
 In~\ref{example1_2}, we present translated set axioms generated from
 the input program by translator module of \SystemName\ . In this example, we give an explanation of how our system automatically derives the loop bound of the program.
-
 
 The C code snippet P with variables $\vec{X}=\{a,b,x,y,z\}$. The two integer variables $a$ and $b$ are assigned with two non-deterministic function call. The algorithm for dividing a number $a$ by another number $b$. When the algorithm terminates, it coming up with a quotient $x$ and a remainder $y$ under the assumption of $a\geq 0$ and $b>0$.
 

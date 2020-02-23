@@ -43,17 +43,18 @@ Then it derives resource bounds from the translated set of constraints.
 %\end{itemize}
 
 \begin{itemize}
-	\item \SystemName\ features a strong recurrence solver which is capable of finding closed forms—effectively of a certain class of P-finite and C-finite recurrences relations as well as certain classes of conditional
+	\item \SystemName\ features a recurrence solving algorithm which is capable of finding closed forms—effectively of a certain class of P-finite and C-finite recurrences relations as well as certain classes of conditional
 	recurrences, a simple case of mutual recurrences and multivariable recurrence relations.  
 	This enables 
 	\SystemName\ to infer resource bounds on C programs with mutually-recursive functions and  complex loops, as well as to derive precise and non-polynomial bounds.
 	\item Compared to more classical approaches based on ranking functions or amortized reasoning, \SystemName\ does not explicitly generate any invariant.
 	State-of-the-art classical approaches are often unable or inefficient to derive suitable non-linear invariants to find suitable resource bounds. 
-	For example, inferring non-linear invariants is a long-standing challenge for conventional safety property verifiers as well~\cite{ball2001automatic,mcmillan2006lazy}. 
+	
+%	For example, inferring non-linear invariants is a long-standing challenge for conventional safety property verifiers as well~\cite{ball2001automatic,mcmillan2006lazy}. 
 \end{itemize}
 
-\yao{I think the refinement-based SMT is just an important optimization. 
-Maybe only need to mention it a bit, and explain more in the technical part}
+%\yao{I think the refinement-based SMT is just an important optimization. 
+%Maybe only need to mention it a bit, and explain more in the technical part}
 %The crux of our technique is to derive non-linear bound resource bounds by constructing a proof that runs of a program path satisfy a given that. \SystemName\'s ability to
 %reason about non-linear behavior the fact that it uses decision procedure for the
 %combination of theories of linear arithmetic and uninterpreted functions.
@@ -66,7 +67,7 @@ Maybe only need to mention it a bit, and explain more in the technical part}
 %analysis, like exiting approaches~\cite{Carbonneaux:2015:CCR:2737924.2737955}, because of the flexibility provided by our translation. 
 %The translated constraints give the relationship between the input and output values of the program variables which provide us the pliability to reason about any property of the program.
 
-Let us first highlight the major weakness of existing approaches with the help of the following examples of C code snippet
+Let us highlight the major weakness of existing approaches with the  following examples of C code snippet
 
 \begin{center}
 	\begin{tabular}{ l | c }
@@ -95,7 +96,10 @@ Let us first highlight the major weakness of existing approaches with the help o
 	\end{tabular}
 \end{center}
 
-The potential-based techniques and amortized analysis base tool $C^{4}B$ can easily find the bound for the program $P_1$ where $C^{4}B$ return the bound $1.00 |[0, C]|$ for the program $P_1$. But all the tools including $C^{4}B$ failed to find the bound for the program $P_2$. \SystemName\ can find the bound of both programs $ |[0, C-x]|$ and $ |[0, (C-x-y)/2]|$ for $P_1$ and $P_2$ respectively. To illustrate how \SystemName\ works, consider the program $P_2$. Lin's~\cite{Lin20161} translation of the above program $P$ generates the following a set of constraint $\Pi^{\vec{X}}_{P}$ after some simple simplifications where $\vec{X}=\{x,y,C\}$
+The potential-based techniques and amortized analysis base tool $C^{4}B$ can easily find the bound for the program $P_1$ where $C^{4}B$ returns the bound $1.00 |[0, C]|$. 
+However, all the tools including $C^{4}B$ failed to find the bound for the program $P_2$. 
+\SystemName\ can find the bound of both programs $ |[0, C-x]|$ and $ |[0, (C-x-y)/2]|$ for $P_1$ and $P_2$ respectively. 
+To illustrate how \SystemName\ works, consider the program $P_2$. Lin's~\cite{Lin20161} translation of the above program $P$ generates the following a set of constraint $\Pi^{\vec{X}}_{P}$ after some simple simplifications where $\vec{X}=\{x,y,C\}$
 \begin{eqnarray*}
 	&& C_1=C , x_1 = x_3(n), y_1 = y_3(n), \\
 	&& x_3(0) = x, y_3(0) = y, \\
@@ -108,7 +112,7 @@ where  $x_1$, $y_1$ and $C_1$ denote the output values of $a$, $b$, $z$, $x$ and
 $x_6(n)$ and $y_6(n)$ the values of $x$ and $y$ during the $n$th iteration
 of the loop, respectively. Also
 $N$ is a natural number constant, and the last two constraints say that it
-is exactly the number of iterations the loop executes before exiting. Our recurrence solving tool recSolve(RS) can find the closed-form solutions of $x_3(n)$ and $y_3(n)$, which yields the closed-form solution $x_3(n)=n-x$ and $y_3(n)=n-y$ respectively. Those can be used to simplify the recurrence for $y_3(n)$ into following set of constraints after eliminates recurrence relation for $x_3()$, and $y_3()$
+is exactly the number of iterations the loop executes before exiting. Our recurrence solving algorithm can find the closed-form solutions of $x_3(n)$ and $y_3(n)$, which yields the closed-form solution $x_3(n)=n-x$ and $y_3(n)=n-y$ respectively. Those can be used to simplify the recurrence for $y_3(n)$ into following set of constraints after eliminates recurrence relation for $x_3()$ and $y_3()$
 \begin{eqnarray*}
 	&& x_1 = N+x, y_1 = N+y, C_1=C,\\
 	&& (2*N+x+y \geq C) \\
@@ -117,8 +121,6 @@ is exactly the number of iterations the loop executes before exiting. Our recurr
 
 The system tried to derive using algorithm $XXX$ derived $N=(C-x-y)/2$, then it tried to prove using SMT solver. 
 If it is able to successfully prove that, then it successfully derived bound $ |[0, (C-x-y)/2]|$ .
-
-
 
 
 %\yao{The following paragraph is too long and talks about too much details. }
@@ -146,7 +148,7 @@ To summarize, this paper makes the following key contributions:
 	\item We prove the soundness of the analysis.
 %	\item It can detect logarithmic bounds.
 %	
-%	\item It can distinguish different branches inside loops and computes bounds for each of them separately.
+	\item It can distinguish different branches inside loops and computes bounds for each of them separately.
 
 	\item We implemented our resource bound analysis in the publicly available tool \SystemName\ .
 	\item We present experiments with \SystemName\ on a benchmark of $C^{4}B$ which is more than 2900 lines of C code. A detailed comparison shows that our prototype is the only tool that can derive global bounds for larger C programs while being as powerful as existing tools when deriving linear local bounds for tricky loop and recursion patterns.
