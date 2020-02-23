@@ -115,20 +115,25 @@ is exactly the number of iterations the loop executes before exiting. Our recurr
 	&& \forall n. n<N\rightarrow (2*n+x+y<C)
 \end{eqnarray*}
 
-The system tried to derive using algorithm $XXX$ derived $N=(C-x-y)/2$, then it tried to prove using SMT solver. If it is able to successfully prove that, then it successfully derived bound $ |[0, (C-x-y)/2]|$ .
+The system tried to derive using algorithm $XXX$ derived $N=(C-x-y)/2$, then it tried to prove using SMT solver. 
+If it is able to successfully prove that, then it successfully derived bound $ |[0, (C-x-y)/2]|$ .
 
 
 
 
-\yao{The following paragraph is too long and talks about too much details. }
-We have recently constructed a fully automated program verification
-system called \SystemName\ \cite{DBLP:conf/synasc/pritom17,viap-array}, for programs with integer assignments and arrays. \SystemName\ is based on the translation Lin \cite{Lin20161} which translates the programs to first-order logic with quantifiers over natural numbers. Translation of the loop body in the program generates a number of constraints based on recursive relationships. Simplify the translated set of constraints by
-trying to compute closed-form solutions of recursive relationships. Simplification process help to reduced quantified constraints which help it reducing the complexity in theorem proving. The translation of multi-path programs with loops results in conditional recurrences. Our proposed recurrence solver (RS) which is capable of finding closed-form solutions of conditional recurrences is integrated with \SystemName\ which clearly shows its effectiveness in performance on state-of-art benchmark programs. The theorem proving part uses Z3 directly when the translated constraints have no inductive definitions.
-Otherwise, our system searches for a proof by mathematical induction using
-Z3 as the base theorem prover. 
+%\yao{The following paragraph is too long and talks about too much details. }
+%We have recently constructed a fully automated program verification
+%system called \SystemName\ \cite{DBLP:conf/synasc/pritom17,viap-array}, for programs with integer assignments and arrays. \SystemName\ is based on the translation Lin \cite{Lin20161} which translates the programs to first-order logic with quantifiers over natural numbers. Translation of the loop body in the program generates a number of constraints based on recursive relationships. Simplify the translated set of constraints by
+%trying to compute closed-form solutions of recursive relationships. Simplification process help to reduced quantified constraints which help it reducing the complexity in theorem proving. The translation of multi-path programs with loops results in conditional recurrences. Our proposed recurrence solver (RS) which is capable of finding closed-form solutions of conditional recurrences is integrated with \SystemName\ which clearly shows its effectiveness in performance on state-of-art benchmark programs. The theorem proving part uses Z3 directly when the translated constraints have no inductive definitions.
+%Otherwise, our system searches for a proof by mathematical induction using
+%Z3 as the base theorem prover. 
 
-The idea of using closed forms of recurrence relations to approximate loops has appeared in a number of previous work. The techniques proposed by Rodr$\acute{i}$guez-Carbonell and Kapur \cite{rodriguez2004automatic} and Kov$\acute{a}$cs\cite{kovacs2004} are based on solving recurrence relations for discovering invariant polynomial equations. On the other hands, works \cite{farzan2015compositional,kincaid2017compositional,kincaid2017non} are based on recurrences analysis which focuses on over-approximate analysis of general loops. Our approach gets the best of both worlds. In contrast, our recurrences precisely
+The idea of using closed forms of recurrences to approximate loops has appeared in a number of previous work. 
+Previous work based on recurrences analysis either focuses on computing accurate information about syntactically restricted loops \cite{rodriguez2004automatic,kovacs2004, humenberger2017automated}, or focuses on over-approximate analysis of general loops \cite{farzan2015compositional,kincaid2017compositional,kincaid2017non}. 
+In contrast, our recurrences precisely
 aim to analyze the accurate semantics of general loops.
+
+%All these approaches have several major limitations. First, they often take restricted forms of recurrences such as C-finite recurrences which have limited expressiveness power. Second, if they fail to find closed form solutions, then they are unable to find suitable invariant to complete the proof. Third, the closed forms of recurrences may contain non-linear integer constraints, which are undecidable.
 
 
 To summarize, this paper makes the following key contributions:
@@ -138,12 +143,11 @@ To summarize, this paper makes the following key contributions:
 	functions, generates resource abstractions for functions, derives
 	proof certificates, and handles resources that may become available during execution.
 	
-	\item It can detect logarithmic bounds.
-	
-	\item It distinguishes different branches inside loops and computes bounds for each of them separately.
-	
 	\item We prove the soundness of the analysis.
-	
+%	\item It can detect logarithmic bounds.
+%	
+%	\item It can distinguish different branches inside loops and computes bounds for each of them separately.
+
 	\item We implemented our resource bound analysis in the publicly available tool \SystemName\ .
 	\item We present experiments with \SystemName\ on a benchmark of $C^{4}B$ which is more than 2900 lines of C code. A detailed comparison shows that our prototype is the only tool that can derive global bounds for larger C programs while being as powerful as existing tools when deriving linear local bounds for tricky loop and recursion patterns.
 \end{itemize}
