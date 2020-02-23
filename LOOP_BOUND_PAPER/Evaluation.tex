@@ -6,41 +6,50 @@ The current implementation of \SystemName\ executes using a single thread. The t
 
 \url{https://github.com/VerifierIntegerAssignment/LoopBoundTool}
 
-The empirical evaluation in intended to answer the following research questions:
+Our empirical evaluation is intended to answer the following research questions:
 \begin{itemize} 
 	%\item \textbf{RQ1} What is the primary objective of selection of benchmark programs?	
 	\item \textbf{RQ1} How effectiveness can \SystemName\ derived loop bound of programs compared to the state-of-the-art tools? 
 	\item \textbf{RQ2} How our system \SystemName\ tried to fill some of the gap which exits in the currently available state-of-the-art tools?
 \end{itemize}
 
+\subsection{Experimental Setup}
+
 \paragraph{Benchmarks}
- Our evaluation subjects include a set of C programs gathered 60 challenging loop and recursion patterns from previous publications~\cite{Gulwani:2010:RP:1806596.1806630,speed1,Carbonneaux:2015:CCR:2737924.2737955}. These programs can be divided into three categories
+The evaluation subjects include a set of C programs gathered 60 challenging loop and recursion patterns from previous publications~\cite{Gulwani:2010:RP:1806596.1806630,speed1,Carbonneaux:2015:CCR:2737924.2737955}. These programs can be divided into three categories
 \begin{itemize}
 	\item 30 programs are from a benchmark suite of $C^4B$~\cite{Carbonneaux:2015:CCR:2737924.2737955} which is used to compare the capability of $C^4B$ with state-of-art bounds generated tools KoAT~\cite{Brockschmidt:2016:ARS:2982214.2866575}, Rank~\cite{Alias:2010:MRP:1882094.1882102}, LOOPUS~\cite{10.1007/978-3-319-08867-9_50}, SPEED~\cite{speed1} and PUBS~\cite{Albert:2012:CAO:2076807.2077025} in its experiment
 	
-	\item 20 programs are from the open-source code. Most of the state-of-art bounds generated tools cannot handle these programs. We have chosen these programs to demonstrate the gap exists in current bound generation tools.
-	
-	\item Another 10 programs are from the open-source code. The main purpose of selection of these program to demonstrate how our tool derive non-linear bound of the programs.  
-	
+	\item 30 programs are from the open-source code. 
+	Most of the state-of-art bounds generated tools cannot handle these programs. We have chosen these programs to demonstrate the gap exists in current bound generation tools.	
+%	\item Another 10 programs are from the open-source code. The main purpose of selection of these program to demonstrate how our tool derive non-linear bound of the programs. 
 	
 	%\item 15 programs are composed by us. This is class of multi-path (more than two execution path) programs with loops which include some non-linear assertion as well. We composed these program which often contain multiple loops or loop body with multiple conditions.
-	
 \end{itemize}
 
-%\SystemName\ is integrated with our recurrence solver framework, RS, to solve a recurrence. 
-All of the experiments are conducted using Intel$\circledR$ Core\texttrademark\ i3 1.8 GHz processor running with 4GB of memory, Ubuntu 16.04 LTS. The source code and the full experiments are available on \url{https://github.com/pritomrajkhowa/}
+\paragraph{Baselines}
+We compare \SystemName\ against several state-of-the-art loop bonds analysis tools.
+\begin{itemize}
+	\item ICRA: 
+	\item ??
+\end{itemize}
+We cannot compare with the analyses in \cite{speed1}, xx and xxx because they are not publicly available.
+
+\paragraph{Environment}
+All of the experiments are conducted using Intel$\circledR$ Core\texttrademark\ i3 CPU@1.8 GHz running with 4GB of memory, Ubuntu 16.04 LTS. 
+The  full experimental results are available on \url{https://github.com/pritomrajkhowa/}.
 
 
-\subsection{Results}
+\subsection{Experimental Results}
 
 
 %\subsubsection{\textbf{\textit{RQ1}}}
-%The primary objective of the selection of benchmark programs to demostrates that %\SystemName\ can handle program with nondeterministic assignments, non-linear %arithmetic or nested loops which most of the state-of-art failed to 
+%The primary objective of the selection of benchmark programs to demonstrates that %\SystemName\ can handle program with nondeterministic assignments, non-linear %arithmetic or nested loops which most of the state-of-art failed to 
 %from \cite{kincaid2017non} is to demonstrate how \SystemName\ can effectively handle programs with multi-path execution body.
-
+%
 %The columns labeled ``Time'' indicate how long the tool took on each program pair in seconds.  ``TO'' indicates that the tool did not terminate in 500 seconds.
-
-\subsubsection{\textbf{\textit{RQ1}}} 
+%
+%\subsubsection{\textbf{\textit{RQ1}}} 
 
 %To provide a comparison point, we also ran five state-of-the-art fully automated tool for verification or loop-invariant, CPAChecker~\cite{CPAChecker-Tool}, UAutomizer~\cite{UAutomizer-Tool}, ICRA \cite{kincaid2017non}, VeriAbs~\cite{Chimdyalwar:2017:VVA:3080455.3080493}, and Seahorn~\cite{Gurfinkel2015}, generation on the same benchmarks. The main criteria for selecting the system are  
 %\vspace{-0.2cm}
