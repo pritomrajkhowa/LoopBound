@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{amsmath}% http://ctan.org/pkg/amsmath
+\usepackage{array}% http://ctan.org/pkg/array
+\usepackage{MnSymbol}% http://ctan.org/pkg/mnsymbol
+\newcolumntype{C}{>{$\displaystyle}c<{$}}
+\newcommand{\onecol}[1]{\multicolumn{2}{C}{#1}}
+\newcommand{\seq}[2]{\frac{\strut#1}{\strut#2}}
+\begin{document}
+\begin{figure}[ht]
+  \centering
+  \renewcommand{\arraystretch}{2.5} % adjust here for interrow spacing
+  \begin{tabular}{C@{\quad}C}
+    \onecol{\seq{}{ A \vdash B}\ \textit{Identity}} \\
+    \onecol{\seq{\Gamma,A,B,\Delta \vdash C}{\Gamma,B,A,\Delta \vdash C}\ \textit{Exchange}} \\
+    \onecol{\seq{\Gamma \vdash B \qquad B,\Delta \vdash C}{\Gamma,\Delta \vdash C}\ \textit{Cut}} \\
+    \seq{}{\Gamma \vdash \mathbf{t}}\ (\mathbf{t}_\mathcal{R}) &
+      \seq{}{\Gamma, \mathbf{f} \vdash A}\ (\mathbf{f}_\mathcal{L}) \\
+    \seq{\Gamma \vdash A}{\Gamma,I \vdash A}\ (I_\mathcal{L}) &
+      \seq{}{{}\vdash I}\ (I_\mathcal{R}) \\
+    \seq{\Gamma,A,B \vdash C}{\Gamma, A \otimes B \vdash C}\ (\otimes_\mathcal{L}) &
+      \seq{\Gamma \vdash A \qquad \Delta \vdash B}{\Gamma,\Delta \vdash A \otimes B}\ (\otimes_\mathcal{R}) \\
+    \seq{\Gamma \vdash A \qquad \Delta,B \vdash C}{\Gamma,\Delta,A \multimap B \vdash C}\ (\multimap_\mathcal{L}) &
+      \seq{\Gamma,A \vdash B}{\Gamma \vdash A \multimap B}\ (\multimap_\mathcal{R}) \\
+    \seq{\Gamma,A \vdash C}{\Gamma,A \mathbin{\&} B \vdash C}\ (\&_{\mathcal{L}-1}) &
+      \seq{\Gamma,B \vdash C}{\Gamma,A \mathbin{\&} B \vdash C}\ (\&_{\mathcal{L}-2}) \\
+    \onecol{\vdots}
+  \end{tabular}
+  \caption{Sequent Calculus Formulation of \textbf{ILL}}
+\end{figure}
+\end{document}

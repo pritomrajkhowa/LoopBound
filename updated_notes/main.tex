@@ -1,0 +1,531 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{mathtools}
+\usepackage{marginnote}
+\usepackage{proof}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{subcaption}
+\usepackage[ruled,vlined]{algorithm2e}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newtheorem{prop}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\begin{document}
+\section{Motivating Example}\label{examples}
+As motivating examples for this research work, we can cite six different programs to demonstrate how the proposed approach works and addresses the limitation of the existing state of the art approaches. These motivating examples provide an intuitive description of three important aspects of our approach. Firstly, the newly proposed approach used translation of program to a set of first order logic formulas to derive the loop bound. Secondly, we demonstrate how our approach successfully finds the loop bound programs with the non-linear loops body, nested loop, multi-path loops body, and loop body with the array and pointers. It is important to mention that the handling of such programs is one of the major limitations of existing approaches. Some of the approaches adopt the strategy to compute accurate information about syntactically restricted loops. But these strategies are not suitable to handle these programs exposes there limitations. Our new proposed approach addresses all these issues. Lastly, our approach provides efficient methods to synthesize loop bound with such as $n \times log n$ or $n^r$, where r is not an integer.
+
+
+
+In this section, we showcase $BoundVIAP$ with six program. To use $BoundVIAP$, users just need to provide input program $P$ written in C syntax. The job of $BoundVIAP$ is to compute loop bound $\mathcal{LB}(P)$ with respect to input values. The loop bound $\mathcal{LB}(P)$ represents an upper bound on the number of its iterations during any execution of the
+program.
+
+\textbf{Program 1 ($P_1$) : } Consider the program $P_1$(\ref{Program2}) in the table~\ref{table1} for computing the integer square root of a given non-negative integer $X$. The goal is to find the loop bound in terms of input value $X$ with respect to pre-condition $X>=0$. $BoundVIAP$ produces $\mathcal{LB}(P_1)$=$\frac{1}{2}\times(\sqrt{4X+1}+1))$.
+
+\textbf{Program 2 ($P_2$) : } Consider the program $P_1$(\ref{Program2}) in the table~\ref{table1}
+which implements the well-known Zohar Mannas version of integer division algorithm for input values $A$ and $B$ such that $A>=0$ and $B>0$. The goal is to find the loop bound in terms of input value $A$ and $B$ with respect to pre-condition $A>=0$ and $B>0$. $BoundVIAP$ produces $\mathcal{LB}(P_1)$=$2\times log_2\frac{A}{B}$.
+
+\textbf{Program 3 ($P_3$) and Program 4 ($P_3$)  : } To illustrate how our system works with programs with nested loops, we have included these two programs. Our system $BoundVIAP$ successfully  produces $\mathcal{LB}(P_3)$= $log_{2}A \times \sqrt{2 \times A}$ and $\mathcal{LB}(P_4)$= $2 \times (log_{2}A) \times A$for the program $P_3$ and $P_4$ respectively. 
+
+\textbf{Program 5 ($P_3$) and Program 6 ($P_3$)  : } We have include the program $P_5$ and $P_6$ to demonstrate the capability of our tool to handle program with array and pointers. $BoundVIAP$ produces $\mathcal{LB}(P_5)$=$log_{2}Size$ and $\mathcal{LB}(P_6)$=$log_{2}Size$.
+
+
+
+\begin{table*}
+\begin{tabular}{|p{2.4in}|p{2.2in}|}\hline
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+void program1(int X){
+    int a=0, su=1, t=1;
+    assume(X>=0);
+    while ( su <= X ) {
+       a=a+1;  t=t+2;  su=su+t; 
+   }
+}
+\end{verbatim}
+\end{minipage}
+\caption{$P_1$}
+\label{Program1}
+\end{subtable}
+&
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+
+  void program4(int A, int B){
+    int q=0,r=A, b=B;    
+   	while(r>=b)
+    {  b=2*b;  }
+    while(b!=B){
+        q=2*q; b=b/2;
+        if (r>=b) 
+        { q=q+1; r=r-b;}
+     }}
+\end{verbatim}
+\caption{$P_2$}
+\label{Program2}
+\end{minipage}
+%\caption{~\cite{svcompbenchmark}}
+\end{subtable}
+\\\hline
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+
+void program3(int A){
+  i= A;
+  while (i>1){
+     k=1; j=1;
+     while(j<=n)
+     {  k++; j+=k; }
+     i= i/2;
+  } 
+}
+\end{verbatim}
+\end{minipage}
+%\caption{~\cite{Xie:2016:PCD:2950290.2950340}}
+\end{subtable}
+&
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+
+void program2(int A){
+ int i = A, k = 0, j = 0;
+ while (i > 1){    
+     j = i; k = 0;
+      while (j <= A)
+      {   k = 0;
+          while (k < A)
+            { k = k + 2;}
+         j = j * 2; }
+     i = i / 2;
+  } }
+\end{verbatim}
+\end{minipage}
+\end{subtable}
+\\\hline
+
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+
+int program5(int arr[], int n
+                      ,int size) {
+    int fst = 0, lst = size - 1; 
+    while (fst <= lst) { 
+        int mid = (fst + lst) / 2;
+        if (arr[mid] < n) 
+             fst = mid + 1; 
+        else if (arr[mid] == n) 
+             break; 
+        else 
+             lst = mid - 1; 
+    } 
+    return mid; 
+}
+\end{verbatim}
+\end{minipage}
+%\caption{~\cite{Xie:2016:PCD:2950290.2950340}}
+\end{subtable}
+&
+\begin{subtable}{.2\textwidth}
+\begin{minipage}{1in}
+\begin{verbatim}
+void program6(char *ptr){
+    int c = 0;    
+   	while(*(ptr+c)!='\0')
+    {  
+       c++;
+     }
+}
+\end{verbatim}
+\end{minipage}
+\end{subtable}
+\\\hline
+
+\end{tabular}
+\caption{Motivating loop programs and their loop bound results by computed by $BoundVIAP$} %(in the boxes)}
+%\caption{Motivating loop program from recent works ~\cite{Li:2017:ALG:3155562.3155660}~\cite{Kincaid:2017:NRI:3177123.3158142}~\cite{Xie:2016:PCD:2950290.2950340} and SV-COMP benchmark~\cite{svcompbenchmark}}
+\label{table1}
+\end{table*}
+
+
+
+\section{Translation($\mathcal{T}$)}\label{translation}
+
+In this section, we present our brief description of the translation function which translate input program to a set of first order formulas that captures the relationship between the input and output values of the input program's variables. The translation function $\mathcal{T}$ of is defined  as follows:
+\[\mathcal{T}(P,\vec{X})=\Pi^{P}_{\vec{X}}\]
+
+where $P$ is the input program, and $\vec{X}_{\mathcal{L}}(=\vec{X}_{V}\cup\vec{X}_{F})$ is the base language which represents a set of functions and predicate symbols which  includes program variables that can be changed by $P$. Translation function $\mathcal{T}$  applied inductively the five basic translation rules to input program $P$ with respect to $\vec{X}$ to generate $\Pi^{P}_{\vec{X}}$ set of first order formulas. 
+
+
+We treat arrays as first-order objects. and use it as parameters of a special function $d_{k}array$ which denote the value of an array at some indices. The arity of the $d_{k}array$ can be defined as follows:
+
+\[
+d_{k}array:\ array_k\times int^k\rightarrow int,
+\]
+
+where $int$ the integer sort, and $array_k$ the $k$-dimensional array sort, where $k\geq 1$. The $d_{k}array^{\prime}(a,i_1,\cdots$ $,i_k)$ and $d_{k}array(a,i_1,\cdots$ $,i_k)$ denote the values the value of a k-dimensional array under a conventional notation $a[i_1]...[i_k]$ at index $i_1,\cdots,$ $i_k$ at the input and the output, respectively, of the program $P$. The translation and expansion rules used by translation function $\mathcal{T}$ are presented here:
+
+
+\infer[T_1]{\Pi_{P}^{\vec{X}}:\Bigg\{\begin{array}{@{}c@{}c@{}c@{}} &V^{\prime} (\vec{x})=E,&\\&X^{\prime}(\vec{x}) = X(\vec{x}) \mbox{ for each $X\in\vec{X}$ which is different from $V$}&\end{array} \Bigg\}}{%
+    P:V = E
+}
+
+
+\infer[T_2]{\Pi_{P}^{\vec{X}}:\Bigg\{\begin{array}{@{}c@{}c@{}c@{}} &d_{k}array'(x,i_1,...,i_k) = ite(x=V\land i_i=\hat{e_1}\land\cdots\land i_k=\hat{e_k} &\\&\hspace*{5em},\hat{E}, d_karray(x,i_1,...,i_k)),&\\&X^{\prime}(\vec{x}) = X(\vec{x}) \mbox{ for each $X\in\vec{X}$ which is different from $V$}&\end{array} \Bigg\}}{%
+    P:V(e_1,e_2,...,e_k) = E
+}
+
+
+\infer[T_3]{\Pi_{P}^{\vec{X}}:\Bigg\{\begin{array}{@{}c@{}c@{}c@{}} &\Pi_{P_1}^{\vec{X}}\cup \Pi_{P_2}^{\vec{X}},&\\&\varphi(\vec{X}^{\prime}/\vec{Y}) \in \Pi_{P_1}^{\vec{X}}\cup \Pi_{P_2}^{\vec{X}}, \mbox{for each $\varphi$ in $\Pi_{P_1}^{\vec{X}}$ } &\\& \varphi(\vec{X}/\vec{Y}) \in \Pi_{P_1}^{\vec{X}}\cup \Pi_{P_2}^{\vec{X}}, \mbox{for each $\varphi$ in $\Pi_{P_2}^{\vec{X}}$ }&\end{array} \Bigg\}}{%
+    P:P_1;P_2
+}
+
+
+\infer[T_4]{\Pi_{P}^{\vec{X}}:ite(B,\varphi_1,\varphi_2) \mbox{ for each $ \varphi_1 \in \Pi_{P1}^{\vec{X}}$ and for each $\varphi_2 \in \Pi_{P2}^{\vec{X}}$}}{%
+    P:if(B)\{ P_1 \}else\{ P_2 \}
+}
+\infer[T_5]{\Pi_{P}^{\vec{X}}:\Bigg\{\begin{array}{@{}c@{}c@{}c@{}} &X(\vec{x}) = X(\vec{x}, 0) \mbox{ for each $X \in \vec{X}$},&\\&\neg B(N),&\\& \forall n.n<N \rightarrow B(n),&\\&X'(\vec{x}) = X(\vec{x}, N) \mbox{ for each $X \in \vec{X}$},&\\&\alpha(n)\mbox{  for each $\alpha \in \Pi_{P1}^{\vec{X}}$}&\end{array} \Bigg\}}{%
+    P:while(B)\{ P_1 \}
+}
+where $\vec{Y}$ of rule $T_3$ is a set of new function symbols, which denotes the values of the corresponding program variables during the execution of the program, such that arity of any $Y_i\in\vec{Y}$ and its corresponding $X_i\in \vec{X}$ are of the same arity. After the replacement of each occurrence of $X_i$ in $\varphi$ by $Y_i$ results $\varphi(X/Y)$. Similarly  $\varphi(\vec{X}^{\prime}/\vec{Y})$ is the result of replacing in $\varphi$ each occurrence of $X_{i}^{\prime}$ by $Y_i$. $\alpha(n)$ of rule $T_5$
+which denotes the value of $\alpha$ after the body $P_1$ has been executed $n$ times. $N$ is a unique natural number, which is not used by translation function $\mathcal{T}$, constant denoting the number of iterations that the loop ran before it exits, and $B(n)$ a formula denoting the true value of the condition $B$ at the end of the $n^{th}$ iteration of the loop. Similarly $n$
+is a unique natural number variable not used by translation function $\mathcal{T}$ before. The following is 
+one of the most important proposition presented in ~\ref{} :
+\begin{prop}\label{propostion1}
+$\neg B(N) \land \forall n.n<N \rightarrow B(n) \equiv \neg B(N) \land B(N-1)$
+\end{prop}
+
+
+
+\section{Recurrence Solver $\mathcal{RS}$}\label{recurrence}
+Then next important fundamental question is how to compute the closed-form solution of such recursive relation which is generated by the translator after translation of program loop. The main responsibility of these modules is to finds a closed-form representation of those recurrences. Here we briefly describe the method for solving recurrence equations which are either of  the form
+\begin{align}
+    &\hspace*{-4em}\sigma_{nc} : X(\vec{x},n+1)= f(X(\vec{x},n))\label{rec_eq1}\\
+    &\hspace*{-4em}\sigma_{c} : X(\vec{x},n+1)= ite(C_1,f_1(X(\vec{x},n)),ite(C_2,...,\nonumber\\
+    &\hspace*{7em}ite(C_h,f_{h}(X(\vec{x},n),f_{h+1}(X(\vec{x},n)))\label{rec_eq2}
+\end{align}
+$C_1,C_2,...,C_{h}$ are boolean expressions, and 
+$f(x,y),f_1(x,y),f_2(x,y),....,f_{h+1}(x,y)$ are polynomial functions of $x$ and $y$.
+The translation function $\mathcal{T}$ of is defined  as follows:
+\[\mathcal{RS}(\Pi,\Pi_{0})=\pi,\Delta\]
+
+where $\Pi$ is a set of recurrence equations and $\Pi_{0}$ represents their  corresponding initial values such that  $\Pi\cup\Pi_{0} \subset \Pi_{X}^{P}$. $\pi$ represents the set of closed form solutions $\mathcal{RS}$ is able to find. $\Delta$ represents set of recurrence equations it failed to find closed form solution.  It
+makes use of the three sub-solvers and two helper functions:
+\begin{itemize}
+	\item A non-conditional recurrence solver ($NCRS$, Algorithm (\ref{NCRS_algorithm})) it can solve recurrence equation of the following types:
+	\begin{itemize}
+	\item When recurrence equation $\sigma_{nc}$ is C-finite recurrence equation of the following form:
+	\begin{eqnarray*}
+      &&X(n+1) = A_1 \times X(n)+B_1,\label{rec1}
+    \end{eqnarray*}
+     where $A_1,B_1$ are constant and independent of $n$.
+	\item When recurrence equation $\sigma_{nc}$ is Gosper-summable recurrence equation of the following form:
+	\begin{eqnarray*}
+      &&X(n+1) = A_1 \times X(n)+B_1(n),\label{rec2}
+    \end{eqnarray*}
+    where $A_1$ is a  constant and independent of $n$. $B_1$ is polynomial of $n$.
+    \item When recurrence equation $\sigma_{nc}$ is hyper geometric recurrence equation of the following form :
+    \begin{eqnarray*}
+      &&X(n+1) = A_1(n) \times X(n),\label{rec3}
+    \end{eqnarray*}
+     where $A_1$ is a polynomial of $n$.
+    \item When set of recurrence equations $\vec{\sigma}$ is Mutual recurrence of the following form for some $h>1$ such that  $\vec{\sigma}$ consists of
+     \begin{eqnarray}
+     X_i(n+1) = A*(X_1(n)+...+X_h(n)) + B_i, \hspace*{1em}\mbox{ for }1\leq i\leq h,\label{rec4}
+     \end{eqnarray}
+     where $A$ and $B_i$ are constants.
+	\end{itemize}
+	\item A conditional recurrence solver ($CRS$, Algorithm (\ref{CRS_algorithm})) can solve recurrence equation of the following types:
+	\begin{itemize}
+	\item  When recurrence equation $\sigma_{c}$ with condition is of the following form:
+	\begin{eqnarray}
+		X(n+1)=ite(C_1(n)=A,f_1(X(n)),f_1(X(n))) \label{rec5}
+	\end{eqnarray}
+     where $C_1$ is a polynomial of $n$ and $A$ is an integer constant.
+	\item  When recurrence equation $\sigma_{c}$ with condition is of the following form:
+	\begin{eqnarray}
+		X(n+1)=ite(C_1,X(n)\pm A,X(n)\mp B) \label{rec6}
+	\end{eqnarray}
+     where $A=B*h$ or $B=A*h$, $A,B,h$ are integer constant and $C_1$ involve recurrence function $X(n)$.
+	\item When recurrence equation $\sigma_{c}$ with condition is either of the following form:
+	\begin{eqnarray}
+		&X(n+1)=ite(Mod(n,c)=d,X(n)\pm A,X(n)\pm B) \label{rec7}\\
+		&X(n+1)=ite(Mod(n,c)!=d,X(n)\pm A,X(n)\pm B) \label{rec8}
+	\end{eqnarray}
+	where  $A,B,c,d$ are integer constant and $Mod$ return Modulus after division $n$ by $c$.
+	
+	\end{itemize}
+the closed-form solution of several classes of  conditional recurrences:
+given a set $\Pi$ of recurrences, $CRS$ $(\Pi)$
+returns three sets $C$, $\Delta$, and a new $\Pi$,
+where $C$ is the set of closed-form solutions computed, $\Delta$
+the set of conditional
+recurrences that it tried but failed to find a closed-form solution,
+and $\Pi$ the set of remaining recurrences.
+	\item A simplifier ($SC$) simplify conditional
+recurrences: given a set $\Pi$ of recurrences and $SC(\Pi)$ returns a new simplified $\Pi$. $SC$ uses SMT solver to simplify a condition. 
+%	\item A substitution function ($SR$) that uses a computed closed-form solution to simplify other recurrences.
+\end{itemize}
+
+\subsubsection{Substitute Result (SR)}
+The substitute function $SR(\pi,{\cal E_1})$ takes two arguments. The first argument $\pi$ is a set of closed-form solutions:
+
+\[
+\pi = (f_1(n)=e_1(n), \cdots, f_k(n)=e_k(n)),
+\]
+
+and the second argument ${\cal E}$ is a set of expressions. The function returns a new set of expressions obtained by replacing occurrence of $f_i(t)$ in the expressions in ${\cal E}$, for every $1\leq i\leq k$ and every term $t$, by $e_i(t)$.
+
+
+
+\subsubsection{Simplify Condition(SC)}
+
+Recurrence Solver uses a systematic technique to simplify condition of recurrence equation $\sigma$ the form present in (\ref{rec2}) using Simplify Condition (SC). It uses two different rules which are presented in Figure (\ref{fig:simplify}). 
+The rule $SC_1$  produces a non-conditional recurrence equation if  identifying $f_1(X(n),n)=f_2(X(n),n)=...=f_{h-1}(X(n),n)=f_{h}(X(n),n)$  with an SMT query. Upon evaluation of the condition to  true, it produces the modified axioms.  
+
+\begin{figure*}[ht]
+	\[
+	% struct literal
+	\infer[SC_1]
+	{X(n+1)=f_1(X(n),n)}
+	{ \sigma_{c} && f_1(X(n),n)=f_2(X(n),n)=...=f_{h}(X(n),n)=f_{h+1}(X(n),n) }
+	\]
+	\[
+	% struct literal
+	\infer[SC_2]
+	{X(n+1)=f_1(X(n),n)}
+	{
+	\sigma_{c} & \theta_1
+	}
+	\]
+
+\caption{The set of rules for simplifying $\sigma$ }
+\label{fig:simplify}
+\end{figure*}
+
+
+These rules are applied recursively until fixed point. In essence, they remove irrelevant and redundant parts of the recurrence equation(s).
+
+
+\begin{algorithm}
+\SetAlgoLined
+\KwIn{$\Pi_P^{\vec{X}}-$a set of translated formulas}
+\KwResult{$\Pi_P^{\vec{X}}-$updated set of formulas}
+ $\Pi \leftarrow  \emptyset$, $\Pi_0 \leftarrow  \emptyset$\;
+ \ForEach{$\sigma_{i} \in \Pi_P^{\vec{X}}$ }{
+  instructions\;
+  \If{$\sigma_{i}$ is of the form ~\ref{rec_eq1} or ~\ref{rec_eq2}}{
+   Add $SC(\sigma_{i}) \in \Pi$\;
+   }
+   \ElseIf{$\sigma_{i}$ is of the form $X(0,\vec{x})=E$}{
+   Add $SC(\sigma_{i}) \in \Pi_0$\;
+   }
+ }
+  $\pi,\Delta \leftarrow \mathcal{RS}(\Pi,\Pi_0)$\;
+  \ForEach{$\sigma_{i} \in \Pi_P^{\vec{X}}$ }{
+    \eIf{$(\sigma_{i} \in \Pi \lor \sigma_{i} \in \Pi_{0})\land \sigma_{i} \notin \Delta$ }{
+        $\Pi_P^{\vec{X}} \leftarrow \Pi_P^{\vec{X}}- \sigma_{i} $
+    }
+    {
+       $\sigma_{i} \leftarrow SR(\pi,\sigma_{i})$\;
+    }
+  }
+  return $\Pi_P^{\vec{X}}$
+ \caption{The Recurrence Solver}
+ \label{Algorithm1}
+\end{algorithm}
+\begin{theorem}\label{theorm1}
+[Termination]. For any set of formulas $\Pi_P^{\vec{X}}$ of size $|\Pi_P^{\vec{X}}|$, Algorithm~\ref{Algorithm1} always terminates after $2\times |\Pi_P^{\vec{X}}|$ iteration. 
+\end{theorem}
+
+\section{Loop Bound Problem}
+In this paper, we use notation $L$ to represents any loops of the form \verb- while B {  }- in a program $P$. In addition to that, we consider
+$L_1;L_2$ notation to represents sequential loop of the form \verb- while B1 {  }; while B2 {  }- where $L_1$ represents loop with condition \verb- B1-
+and $L_2$ represents loop with condition \verb- B2-. $L_1(L_2)$ represents nested loop of the form \verb- while B1 { while B2 {  } }-.
+
+%following notation loops in the program $P$:
+%\begin{table}[h!]
+%  \begin{center}
+%    \begin{tabular}{c|r} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+%      \textbf{Sequential Loop} & \textbf{Nested Loop}\\
+%      \hline
+%      \verb- while B1 {  }; while B2 {  }- & \verb- while B1 { while B2 {  } }- \\
+%      \hline
+%      L1,L2 & L1,L2(L1) 
+%    \end{tabular}
+%  \end{center}
+%\end{table}
+To determined loop bound of a loop \verb- while B { P }-, our most important formula of interest from the translated set of formulas are the following formulas: 
+\begin{eqnarray}
+&& \forall \neg B(N), \label{smallest1}\\
+&& \forall n. n< N\rightarrow  B(n) \label{smallest2}
+\end{eqnarray}
+where $n$ is a new natural number variable such that $B(n)$ a formula denoting the true value of the condition $B$ at the end of the $n^{th}$ iteration of the loop. $N$ is a new smallest natural number constant which 
+denotes the number of iterations that the loop ran before it exits. $B(N)$ a formula denoting the true value of the condition $B$ at the end of the $N^{th}$ iteration of the loop. For example, let's consider $B$ is $n<M$ says that $N$ is the smallest natural number and M is an integer constant such following formulas are always hold:
+\begin{eqnarray}
+&& \neg (N<M), \label{smallest3}\\
+&& \forall n. n< N\rightarrow  n<M \label{smallest4}
+\end{eqnarray}
+Now using proposition \ref{propostion1}, we can rewrite expression~\ref{smallest3} and ~\ref{smallest4} to following formulas:
+\begin{eqnarray}
+&&  \neg (N<M), \label{smallest5}\\
+&& (N-1<M) \label{smallest6}
+\end{eqnarray}
+Now, we can derive $N-1<M<N$. As we know that $N,M$ both integer constant. Finally we can conclude that $N=M$. Hence we have found that loop iterate at least most $M$ before termination.
+
+A loop bound finding task is defined by the three components:
+\[(P,\vec{X},\vec{I},\Pi_P^{\vec{X}},\mathcal{N},\mathrm{R},\mathrm{Q} )\]
+
+where $P$ is the input program, $\vec{X}$ is the set of program variables,
+$\vec{I}$ is the set of Input program variables, $\Pi_P^{\vec{X}}$ is the set of translated first order logic formulas, $\mathcal{N}$ is the set of natural number constants introduce by translator,  $\mathrm{R}\subseteq \mathcal{N} \times \mathcal{N}$ is a set of tuples of loop constant and its 
+immediate inner loop constants if exits. The list of loop constant of the outer most loop in the order of their occurrences in the program P.
+The goal of our loop bound finding algorithm is to produce loop bound of each individual loop and overall loop bound of the input program $P$. The loop bound finding algorithm tried to find root $N$ from formulas~\ref{smallest5} and~\ref{smallest6}  for loop $L_i\in P$ of the following equation corresponds to integer constant:
+\begin{eqnarray}
+&& \neg F_i(N_i,\vec{I}), \label{smallest7}\\
+&& \forall n. n< N_i\rightarrow  F_i(n,\vec{I}) \label{smallest8}
+\end{eqnarray}
+where $N_i\in \mathcal{N}$ and $F_i(x,\vec{y})$ is an Boolean polynomial expression over all $x$ and the elements $\vec{y}$. The translation of any inner loop $L_j$ of $L_i$ to generates the following two formulas:
+
+\begin{eqnarray}
+&&  \forall n_j.\neg F_j(n_i,N_j(n_i),\vec{I}), \label{smallest1}\\
+&& \forall n_i,n_j. n_j< N(n_i)\rightarrow  F_j(n_i,n_j,\vec{I}) \label{smallest2}
+\end{eqnarray}
+
+where $N_i(k)$ is a system generated natural number function denoting for each $k$, $N_i(k)$ is the number of iterations that the inner loop runs during the $k$th iteration of the outer loop $L_i$. $F_j(x, y,\vec{z})$ is an Boolean polynomial expression over all $x$ and $y$ and the elements $\vec{z}$. $F_j(n_i,n_j)$ a formula denoting the true value of the condition $F_j$ at the end of the ${n_i}^{th}$ iteration of the loop outer loop $L_i$ and ${n_j}^{th}$ iteration of the loop $L_j$.
+
+
+
+
+Then it use $R$ to find the loop bound of any nested loop $L_{i}[..,L_j[..L_k..],...]$ which can be represented as follow:
+\begin{eqnarray}
+&&\hspace*{-4em}\mathcal{LB}(L_{i}[..,L_j[..L_k..],...]) = N_i \times \sum_{\{(N_i,N_j(n_i)) \in  \mathrm{R_i}\}}^{} \Big( N_j(n_i) \times\nonumber \\
+&&\hspace*{5em} \sum_{\{(N_j(n_i),N_k(n_i,n_j)) \in  \mathrm{R_j}\}}^{} \Big( N_k(n_i,n_j) \times \cdots \Big)\cdots \Big) , \label{loopbound1}
+\end{eqnarray}
+where $R_i,R_j$ are the elements in $R$ corresponds to loops $L_i,L_j$ respectively. $Q$ is used to compute the overall loop bound $\mathcal{LB}(P)$ of the input program $P$
+\begin{eqnarray}
+&&\hspace*{-4em}\mathcal{LB}(P) = \sum_{\{N_i \in  \mathrm{Q}\}}^{} N_i. \label{loopbound2}
+\end{eqnarray}
+
+Before explaining our algorithm, we have presenting some useful properties about equations~\ref{smallest7} and ~\ref{smallest8}.
+
+
+\begin{prop}\label{propostion2}
+Let $f(x,\vec{y})$, $f:\mathbb{N}\rightarrow \mathbb{N}$ , be a polynomial of $x$ and the elements $\vec{y}$ where $x$, $\vec{y}$ and all the co-efficient of $f(x,\vec{y})$ are integer 
+\begin{eqnarray}
+	&&f(N,\vec{I})\geq 0 \land \forall n.0\leq n < N \rightarrow f(n,\vec{I})<0\label{theorm1} \label{theorm2}
+\end{eqnarray}
+where n, N are integers and $\vec{I}$ is a set of integers. If $\vec{\alpha}$ is a set of real roots of $f(N,\vec{I})=0$, then $\ceil*{\alpha}$ satisfies equation (\ref{propostion1})  where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$. 
+\end{prop}
+\begin{proof}
+If $\vec{\alpha}$ is a set of roots of $f(N,\vec{I})=0$, then $\ceil*{\alpha}$ satisfies equation (\ref{theorm1}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+As $\alpha$ is the root of $f(N,\vec{I})=0$, then we have the following:
+    \begin{eqnarray}
+    &&f(\alpha,\vec{I})=0\label{theorm_eq1}
+    \end{eqnarray}
+Now $\ceil*{\alpha}=\alpha+\delta$ and $\alpha+\delta-1<\alpha$ where $\delta \in \mathbb{R}$ and $0<\delta<1$. Then we have the following from equation (\ref{theorm_eq1})
+    \begin{eqnarray}
+    &&f(\alpha+\delta,\vec{I})>0\label{theorm_eq2}\\
+    &&f(\alpha+\delta-1,\vec{I})<0\label{theorm_eq3}
+    \end{eqnarray}
+Hence we have successfully proved that $\ceil*{\alpha}$ satisfies equation (\ref{theorm1}).
+\end{proof}
+
+
+\begin{prop}\label{propostion3}
+Let $f(x,\vec{y})$, $f:\mathbb{N}\rightarrow \mathbb{N}$ , be a polynomial of $x$ and the elements $\vec{y}$ where $x$, $\vec{y}$ and all the co-efficient of $f(x)$ are integer 
+\begin{eqnarray}
+	&&f(N,\vec{I})>0 \land \forall n.0\leq n < N \rightarrow f(n,\vec{I})\leq0\label{theorm2}
+\end{eqnarray}
+where n and N are integers and $\vec{I}$ is a set of integers. If $\vec{\alpha}$ is a set of real roots of $f(N-1,\vec{I})=0$, then $\floor*{\alpha}$ satisfies equation (\ref{theorm2}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+\end{prop}
+\begin{proof}
+If $\vec{\alpha}$ is a set of roots of $f(N-1,\vec{I})=0$, then $\floor*{\alpha}$ satisfies equation (\ref{theorm2}) where $\alpha \in \vec{\alpha}$ and $\alpha \in \mathbb{R}$.
+As $\alpha$ is the root of $f(N-1,\vec{I})=0$, then we have the following:
+    \begin{eqnarray}
+    &&f(\alpha-1,\vec{I})=0\label{theorm_eq4}
+    \end{eqnarray}
+Now $\floor*{\alpha}=\alpha-\delta$ and $\alpha-\delta+1>\alpha$ where $\delta \in \mathbb{R}$ and $0<\delta<1$. Then we have the following from equation (\ref{theorm_eq1})
+    \begin{eqnarray}
+    &&f(\alpha-\delta-1,\vec{I})<0\label{theorm_eq5}\\
+    &&f(\alpha-\delta+1-1,\vec{I})>0\label{theorm_eq6}
+    \end{eqnarray}
+Hence we have successfully proved that $\floor*{\alpha}$ satisfies equation (\ref{theorm2}).
+\end{proof}
+\begin{prop}\label{propostion4}Given a program $P$ with the loop \verb- while E { B }-  and bound $\mathcal{B}$ of that corresponding loop, the drive the value of $N(\vec{x})$  from the equation (\ref{smallest1}) and (\ref{smallest2}) of the translated set of axioms $\Pi_{P}^{\vec{X}}$ of the program represents the bound such that 
+\begin{itemize}
+    \item $N(\vec{x})=\floor*{f(\vec{x},\vec{Y})}$, if and only if it satisfies following
+    \begin{eqnarray}
+    &&\hspace*{-4em}\forall \vec{x}.[\forall y.y\geq \floor*{f(\vec{x},\vec{Y})} \rightarrow \neg E(\vec{x},\floor*{f(\vec{x},\vec{Y})}) \land \nonumber\\
+    &&\hspace*{10em}\forall n. n< \floor*{f(\vec{x},\vec{Y})}\rightarrow  E(\vec{x},n)] \label{smallest5}
+   \end{eqnarray}
+    
+    \item $N(\vec{x})=\ceil*{f(\vec{x},\vec{Y})}$, if and only if satisfies following
+    \begin{eqnarray}
+    &&\hspace*{-4em}\forall \vec{x}.[\forall y.y\geq \ceil*{f(\vec{x},\vec{Y})} \rightarrow \neg E(\vec{x},\ceil*{f(\vec{x},\vec{Y})}) \land \nonumber\\
+    &&\hspace*{10em}\forall n. n< \ceil*{f(\vec{x},\vec{Y})}\rightarrow  E(\vec{x},n)]\label{smallest6}
+   \end{eqnarray}
+\end{itemize}
+where $f$ is an polynomial in terms of $\vec{x}$ and $\vec{Y}$ is the set of input variables of program $P$.
+
+\end{prop}
+\begin{proof}
+The equation (\ref{smallest1}) and (\ref{smallest2}) are rewrote in the following form as presented in proposition~\ref{propostion1}:
+\begin{eqnarray}
+    &&\forall \vec{x}.[E(\vec{x},N(\vec{x})) \land E(\vec{x},N(\vec{x})-1)] \label{smallest3}
+\end{eqnarray}
+Then normalized to axiom of $E(\vec{x},N(\vec{x}))$ and $E(\vec{x},N(\vec{x}-1))$ such all the term moved to left hand side. Each of those axiom is transformed to the form of $F(\vec{x},N(\vec{x}))\sim 0$ and $F(\vec{x},N(\vec{x})-1)\sim 0$ respectively, where  $\sim \in \{<, \leq, >, \geq, =, \not=\}$ and $F$ is an polynomial .
+\begin{itemize}
+    \item When $\sim \in \{\leq, \geq, =\}$ for $F(\vec{x},N(\vec{x}))\sim 0$, then solve polynomial equation $F(\vec{x},N(\vec{x}))= 0$ for $N(\vec{x})$. 
+    Then derive $N(\vec{x}) = \ceil*{f(\vec{x},\vec{Y})}$ as presented in~\ref{propostion2}.
+    \item When $\sim \in \{\leq, \geq, =\}$ for $F(\vec{x},N(\vec{x})-1)\sim 0$, then solve polynomial equation $F(\vec{x},N(\vec{x}))= 0$ for $N(\vec{x})$. 
+    Then derive $N(\vec{x}) = \floor*{f(\vec{x},\vec{Y})}$ as presented in~\ref{propostion3}.
+\end{itemize}
+\end{proof}
+
+\begin{theorem}\textbf{(Soundness)}\label{thm1}
+Consider program $P$ with loops $L_1$, . . . , $L_m$ with corresponding conditional expression $E_1$, . . . , $E_m$ where $m\geq 1$.  The translation of program $P$ results a set of axioms $\Pi^{\vec{X}}_{P}$. Each condition $E_i$ is represented by following axioms as follows such that $1\leq i \leq m$:
+\begin{eqnarray}
+&&  \forall \vec{x}.\neg E(\vec{x},N_i(\vec{x})), \label{smallest7}\\
+&& \forall \vec{x},n. n< N_i(\vec{x})\rightarrow  E(\vec{x},n) \label{smallest8}
+\end{eqnarray}
+where $E(\vec{x},N_i(\vec{x}))$ or $E(\vec{x},N_i(\vec{x})-1)$ polynomial of $\vec{x}$,$N_i(\vec{x})$ and solvable for $N_i(\vec{x})$ and have positive real root(s).
+Algorithm~\ref{algo:found_bound1} can find the bounds  $\mathcal{LB}(L_1),$...$,\mathcal{LB}(L_m)$ for corresponding loops  $L_1$, . . . , $L_m$ respectively.
+\end{theorem}
+\begin{theorem}\textbf{(Termination)}\label{thm2}
+Consider program $P$ with loops $L_1$, . . . , $L_m$, the translation of the program generate a set of axioms $\Pi_{P}^{\vec{X}}$. Algorithm~\ref{algo:found_bound1} terminates for $\Pi_{P}^{\vec{X}}$ after $O(\mathcal{N}^{\Pi_{P}^{\vec{X}}})$ where $\mathcal{N}^{\Pi_{P}^{\vec{X}}}$ number of axioms in $\Pi_{P}^{\vec{X}}$.
+\end{theorem}
+\begin{proof}
+Both theorem ~\ref{thm1} and ~\ref{thm2} can be easily prove. The ~\ref{thm1} can be proved using proposition~\ref{propostion4}.
+\end{proof}
+
+\begin{algorithm}
+\DontPrintSemicolon % Some LaTeX compilers require you to use \dontprintsemicolon instead
+\KwIn{$\Pi_{P}^{\vec{X}}$ is the set of  first-order axioms; $\alpha$ is the set of pre-conditions }
+\KwOut{$\mathcal{B}$ is a set of bounds }
+$\mathcal{B} \leftarrow \emptyset$\;
+
+\Return{$\mathcal{B}$}\;
+\caption{{\sc BOUNDFIND} finds loop bound}
+\label{algo:found_bound1}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
